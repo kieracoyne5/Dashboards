@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Kiera Coyne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%230a1120'/%3E%3Crect x='8' y='18' width='4' height='9' rx='1' fill='%23e3c065'/%3E%3Crect x='15' y='12' width='4' height='15' rx='1' fill='%23e3c065'/%3E%3Crect x='22' y='7' width='4' height='20' rx='1' fill='%23c9a227'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a1120;
+    --bg-2:#0f1a2e;
+    --card:#101c33;
+    --ink:#eef1f6;
+    --ink-dim:#8a97b0;
+    --line:#22314c;
+    --accent:#c9a227;
+    --accent-bright:#e3c065;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 10% -10%, rgba(201,162,39,0.08), transparent 45%),
+      radial-gradient(ellipse at 95% 0%, rgba(45,90,140,0.16), transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{ max-width:820px; margin:0 auto; padding:0 28px 80px; }
+
+  /* ---- Top nav bar ---- */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    background:rgba(15,26,46,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:820px; margin:0 auto; padding:0 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px;
+    background:linear-gradient(155deg, var(--accent-bright), var(--accent) 65%, #8a6c1c);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brand-name{ font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:.02em; color:var(--ink); }
+  .top-nav{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.03em;
+    display:flex; gap:6px; align-items:center;
+  }
+  .top-nav a{
+    color:var(--ink-dim); text-decoration:none;
+    padding:8px 14px; border-radius:999px;
+    transition:color .15s ease, background .15s ease;
+  }
+  .top-nav a:hover{ color:var(--ink); background:rgba(255,255,255,0.05); }
+  .top-nav a.current{ color:var(--bg); background:var(--accent-bright); }
+
+  /* ---- Header ---- */
+  header{ padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--accent-bright); margin:0 0 16px;
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600; font-size:clamp(32px,4.6vw,46px);
+    line-height:1.08; margin:0 0 16px; letter-spacing:-.01em;
+  }
+  .sub{ max-width:600px; color:var(--ink-dim); font-size:16px; line-height:1.7; margin:0 0 6px; }
+
+  section{ padding:44px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  h2{
+    font-family:'Fraunces', serif; font-weight:600; font-size:22px; margin:0 0 18px; color:var(--ink);
+  }
+  p{ color:var(--ink-dim); font-size:15px; line-height:1.75; margin:0 0 14px; }
+
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; padding:6px 12px;
+    border:1px solid var(--line); border-radius:999px; color:var(--ink-dim);
+    background:var(--card);
+  }
+
+  .role-list{ display:flex; flex-direction:column; gap:36px; }
+  .role{ position:relative; padding-left:24px; border-left:2px solid var(--line); }
+  .role-head{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 16px; margin-bottom:4px; }
+  .role-title{ font-family:'Fraunces', serif; font-weight:600; font-size:18px; color:var(--ink); }
+  .role-dates{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--accent-bright); white-space:nowrap; }
+  .role-meta{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-dim); margin-bottom:12px; }
+  .role-bullets{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .role-bullets li{
+    font-size:14px; line-height:1.65; color:var(--ink-dim); padding-left:18px; position:relative;
+  }
+  .role-bullets li::before{
+    content:"·"; position:absolute; left:0; top:0; color:var(--accent-bright); font-weight:700;
+  }
+  .role-bullets b{ color:var(--ink); font-weight:600; }
+
+  .edu-block{ display:flex; flex-direction:column; gap:4px; }
+  .edu-school{ font-family:'Fraunces', serif; font-weight:600; font-size:18px; color:var(--ink); }
+  .edu-detail{ font-size:14px; color:var(--ink-dim); line-height:1.6; }
+
+  .links-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+  .link-card{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:20px 22px; border:1px solid var(--line); border-radius:8px; background:var(--card);
+    text-decoration:none; color:inherit; transition:border-color .15s ease, transform .15s ease;
+  }
+  .link-card:hover{ border-color:var(--accent-bright); transform:translateY(-2px); }
+  .link-card-label{ font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-bright); display:block; margin-bottom:6px; }
+  .link-card-title{ font-family:'Fraunces', serif; font-weight:600; font-size:17px; color:var(--ink); }
+  .link-arrow{ font-family:'IBM Plex Mono', monospace; color:var(--accent-bright); font-size:18px; flex-shrink:0; }
+
+  footer{
+    margin-top:56px; padding-top:24px; border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-dim);
+  }
+  footer a{ color:var(--accent-bright); text-decoration:none; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">
+          <svg width="18" height="18" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="18" width="4" height="10" rx="1" fill="#0a1120"/>
+            <rect x="15" y="10" width="4" height="18" rx="1" fill="#0a1120"/>
+            <rect x="24" y="4" width="4" height="24" rx="1" fill="#0a1120"/>
+          </svg>
+        </span>
+        <span class="brand-name">Kiera Coyne</span>
+      </a>
+      <nav class="top-nav">
+        <a href="./index.html">Dashboards</a>
+        <a href="./about.html" class="current">About</a>
+        <a href="./Kiera-Coyne-Resume.pdf" target="_blank" rel="noopener">Résumé ↗</a>
+      </nav>
+    </div>
+  </div>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">About</p>
+    <h1>Kiera Coyne</h1>
+    <p class="sub">AI &amp; Business Intelligence Manager — turning messy data into dashboards executives actually use.</p>
+    <p class="sub">7+ years leading analytics across digital products, finance, and enterprise operations, most recently building out BI &amp; AI strategy for Apple's U.S. Sales and Finance organizations at HCL / Starschema.</p>
+  </header>
+
+  <section>
+    <h2>What I work in</h2>
+    <div class="tags">
+      <span class="tag">Tableau</span>
+      <span class="tag">Power BI</span>
+      <span class="tag">SQL</span>
+      <span class="tag">Snowflake</span>
+      <span class="tag">Python</span>
+      <span class="tag">Dataiku</span>
+      <span class="tag">KPI Strategy</span>
+      <span class="tag">Data Governance</span>
+      <span class="tag">Executive Storytelling</span>
+      <span class="tag">Predictive Analytics</span>
+      <span class="tag">AI-Enabled Analytics</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+    <div class="role-list">
+
+      <div class="role">
+        <div class="role-head">
+          <span class="role-title">AI and Business Intelligence Manager</span>
+          <span class="role-dates">Sep 2025 – Present</span>
+        </div>
+        <div class="role-meta">HCL, Starschema · Client: Apple — US Sales Channel</div>
+        <ul class="role-bullets">
+          <li>Lead and mentor a team of Business Intelligence analysts delivering analytics products and executive dashboards that support strategic decision-making across Apple's U.S. Sales and Finance organizations.</li>
+          <li>Delivered <b>10+ core dashboards</b> with a roadmap to 50+, supporting more than <b>1,000 business users</b>.</li>
+          <li>Spearhead integration of AI capabilities into Tableau, developing intelligent dashboards with predictive insights and automated analytics.</li>
+          <li>Define enterprise AI and Business Intelligence strategy by aligning analytics initiatives with business priorities, establishing KPI frameworks, and delivering executive insights that guide strategic investment decisions.</li>
+          <li>Partner with Data Engineering and business leaders to establish source-of-truth data models, standardized KPI definitions, semantic-layer strategy, and reusable analytics assets across finance and sales organizations.</li>
+          <li>Partner with Product, Technology, Engineering, and business leaders to define success metrics, prioritize analytics initiatives, and deliver executive-ready recommendations.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <div class="role-head">
+          <span class="role-title">Manager, Financial Data Analyst</span>
+          <span class="role-dates">Mar 2024 – Sep 2025</span>
+        </div>
+        <div class="role-meta">Vail Resorts</div>
+        <ul class="role-bullets">
+          <li>Owned enterprise BI strategy for FP&amp;A, leading a company-wide analytics transformation that standardized workflows for <b>200+ stakeholders</b>.</li>
+          <li>Architected an enterprise Snowflake analytics platform — governed data models, standardized KPI frameworks, reusable reporting assets, and scalable BI architecture supporting enterprise-wide reporting.</li>
+          <li>Designed executive Tableau dashboards and self-service analytics solutions that informed strategic planning and accelerated decision-making across a <b>$3B revenue portfolio</b>.</li>
+          <li>Automated financial reporting pipelines with SQL and Python, <b>cutting manual prep by 40%</b> and <b>boosting reporting accuracy by 25%</b>.</li>
+          <li>Upskilled analysts in BI design, forecasting, and scenario planning, raising team capability and adoption of advanced analytics.</li>
+          <li>Partnered with executive stakeholders to define KPI frameworks, evaluate strategic initiatives, and translate analytics into actionable recommendations.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <div class="role-head">
+          <span class="role-title">Business Intelligence Manager</span>
+          <span class="role-dates">Sep 2022 – Mar 2024</span>
+        </div>
+        <div class="role-meta">HCL, Starschema · Client: Apple — US Sales Channel</div>
+        <ul class="role-bullets">
+          <li>Directed a <b>9-person BI team</b> supporting Apple's U.S. finance and sales operations, delivering 100+ analyses per year.</li>
+          <li>Built reusable Tableau analytics products on standardized semantic models and governed metrics, used by over <b>500 Apple stakeholders</b>.</li>
+          <li>Designed Apple's <b>Tableau design system</b>, showcased at Tableau Conference 2023 and scaled across multiple business units.</li>
+          <li>Automated recurring reporting processes with SQL, Python, and Dataiku, <b>reducing prep time by 75%</b> and saving ~400 analyst hours annually.</li>
+          <li>Created prototype BI models and Tableau extensions enabling advanced trend, scenario, and sales channel analysis.</li>
+          <li>Collaborated with senior leaders to define analytics requirements and deliver scalable BI solutions aligned with strategic goals.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <div class="role-head">
+          <span class="role-title">Advisory Senior Associate / Advisory Associate</span>
+          <span class="role-dates">Aug 2019 – Sep 2022</span>
+        </div>
+        <div class="role-meta">Grant Thornton LLC · Digital Transformation and Management · Client agencies: Department of State, NASA, DHS, Veterans Affairs</div>
+        <ul class="role-bullets">
+          <li>Designed Power BI dashboards and predictive models to monitor <b>$20B+ in federal funding</b> across 70+ programs, strengthening financial accountability.</li>
+          <li>Automated workforce analytics pipelines with Python and Power BI, <b>cutting delivery times by 50%</b>.</li>
+          <li>Built performance tracking systems and KPI dashboards adopted by 5+ federal divisions.</li>
+          <li>Delivered insights and BI tools to agency executives and White House–level leadership, influencing policy-level funding decisions.</li>
+          <li>Supported federal digital transformation initiatives, ensuring BI solutions aligned with compliance, transparency, and governance standards.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Education</h2>
+    <div class="edu-block">
+      <span class="edu-school">Virginia Tech — Blacksburg, VA</span>
+      <span class="edu-detail">B.S. in Business, Business Information Technology: Computer-Based Decision Support Systems</span>
+      <span class="edu-detail">Minor in Entrepreneurship — New Venture Growth</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Elsewhere</h2>
+    <div class="links-grid">
+      <a class="link-card" href="mailto:kieracoyne4@gmail.com">
+        <div><span class="link-card-label">Email</span><span class="link-card-title">kieracoyne4@gmail.com</span></div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://www.linkedin.com/in/kiera-coyne/" target="_blank" rel="noopener">
+        <div><span class="link-card-label">Profile</span><span class="link-card-title">LinkedIn</span></div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://public.tableau.com/app/profile/kiera5778/vizzes" target="_blank" rel="noopener">
+        <div><span class="link-card-label">Visualizations</span><span class="link-card-title">Tableau Public</span></div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="./Kiera-Coyne-Resume.pdf" target="_blank" rel="noopener">
+        <div><span class="link-card-label">PDF</span><span class="link-card-title">Full Résumé</span></div>
+        <span class="link-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <a href="./index.html">← Back to dashboards</a> · <a href="https://github.com/kieracoyne5/Dashboards" target="_blank" rel="noopener">source on GitHub</a>
+  </footer>
+</div>
+</body>
+</html>
