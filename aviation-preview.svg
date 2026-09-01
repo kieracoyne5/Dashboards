@@ -1,0 +1,53 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradAviation" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1f2733;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="400" height="300" fill="url(#bgGradAviation)"/>
+  
+  <!-- Sky clouds -->
+  <ellipse cx="80" cy="60" rx="40" ry="25" fill="#ede7d9" opacity="0.1"/>
+  <ellipse cx="120" cy="70" rx="35" ry="20" fill="#ede7d9" opacity="0.1"/>
+  <ellipse cx="320" cy="80" rx="45" ry="28" fill="#ede7d9" opacity="0.1"/>
+  <ellipse cx="360" cy="90" rx="30" ry="18" fill="#ede7d9" opacity="0.1"/>
+  
+  <!-- Airplane body -->
+  <ellipse cx="200" cy="150" rx="70" ry="25" fill="#b8863b" stroke="#d9a857" stroke-width="2"/>
+  
+  <!-- Cockpit/nose -->
+  <circle cx="265" cy="150" r="18" fill="#d9a857" stroke="#b8863b" stroke-width="2"/>
+  <circle cx="270" cy="150" r="12" fill="#ede7d9" opacity="0.4"/>
+  
+  <!-- Window -->
+  <circle cx="268" cy="148" r="6" fill="#5b7a94" opacity="0.6"/>
+  
+  <!-- Main wings -->
+  <path d="M 150 140 L 80 120 L 80 160 L 150 160 Z" fill="#b8863b" stroke="#d9a857" stroke-width="2"/>
+  <path d="M 250 140 L 320 120 L 320 160 L 250 160 Z" fill="#b8863b" stroke="#d9a857" stroke-width="2"/>
+  
+  <!-- Tail wing -->
+  <path d="M 130 155 L 100 180 L 100 210 L 130 185 Z" fill="#a4453a" stroke="#c05e50" stroke-width="1.5" opacity="0.8"/>
+  
+  <!-- Propeller -->
+  <circle cx="200" cy="150" r="6" fill="#8a6c1c"/>
+  <g transform="translate(200, 150) rotate(45)">
+    <ellipse cx="0" cy="0" rx="25" ry="5" fill="#d9a857" opacity="0.7"/>
+  </g>
+  
+  <!-- Landing gear -->
+  <line x1="180" y1="175" x2="180" y2="220" stroke="#b8863b" stroke-width="2"/>
+  <line x1="220" y1="175" x2="220" y2="220" stroke="#b8863b" stroke-width="2"/>
+  <circle cx="180" cy="225" r="8" fill="#8a6c1c" stroke="#b8863b" stroke-width="1"/>
+  <circle cx="220" cy="225" r="8" fill="#8a6c1c" stroke="#b8863b" stroke-width="1"/>
+  
+  <!-- Altitude indicator lines -->
+  <line x1="50" y1="150" x2="80" y2="150" stroke="#d9a857" stroke-width="1" opacity="0.3"/>
+  <line x1="320" y1="150" x2="350" y2="150" stroke="#d9a857" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Pioneer Era text -->
+  <text x="200" y="280" font-family="serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#d9a857" letter-spacing="2">PIONEER ERA</text>
+</svg>
