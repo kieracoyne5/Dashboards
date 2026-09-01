@@ -24,7 +24,16 @@
   }
   .wrap{ max-width:960px; margin:0 auto; padding:0 28px 80px; }
 
-  header{ padding:64px 0 40px; border-bottom:1px solid var(--line); }
+  header{ padding:64px 0 40px; border-bottom:1px solid var(--line); position:relative; }
+  .top-nav{
+    position:absolute; top:0; right:0;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.04em;
+  }
+  .top-nav a{
+    color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent);
+    padding-bottom:2px; transition:opacity .15s ease;
+  }
+  .top-nav a:hover{ opacity:.65; }
   .eyebrow{
     font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.2em;
     text-transform:uppercase; color:var(--accent); margin:0 0 16px;
@@ -68,6 +77,7 @@
 <body>
 <div class="wrap">
   <header>
+    <nav class="top-nav"><a href="./Kiera-Coyne-Resume.pdf" target="_blank" rel="noopener">Résumé (PDF) ↗</a></nav>
     <p class="eyebrow">Kiera Coyne · Dashboard Portfolio</p>
     <h1>Data, visualized<br>a few ways at a time.</h1>
     <p class="sub">A small collection of interactive, Tableau-style dashboards built in plain HTML — each with its own visual identity, drawn from the subject rather than a template.</p>
@@ -88,6 +98,14 @@
         <span class="card-tag">Aviation History · 1908–1926</span>
         <h2 class="card-title">The Pioneer Era</h2>
         <p class="card-desc">The first 100 recorded fatal aviation accidents, from the Wright Flyer through the early airmail age. Navy &amp; brass, a filterable incident log.</p>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+    <a class="card" href="./Kiera-Coyne-Resume.pdf" target="_blank" rel="noopener">
+      <div>
+        <span class="card-tag">PDF · Opens in a new tab</span>
+        <h2 class="card-title">Résumé</h2>
+        <p class="card-desc">AI &amp; Business Intelligence Manager — 7+ years across Tableau, Power BI, SQL, Snowflake, and Python, most recently leading BI for Apple's U.S. Sales &amp; Finance org.</p>
       </div>
       <div class="card-arrow">→</div>
     </a>
