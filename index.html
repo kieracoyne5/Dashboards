@@ -127,10 +127,31 @@
     padding:0; border:1px solid var(--line); border-radius:8px;
     background:var(--card); text-decoration:none; color:inherit;
     transition:border-color .15s ease, transform .15s ease; overflow:hidden;
+    position:relative;
   }
   .card:hover{ border-color:var(--accent-bright); transform:translateY(-4px); }
+  .tool-badge{
+    position:absolute; top:12px; right:12px; z-index:2;
+    font-family:'IBM Plex Mono', monospace; font-size:9.5px; font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase;
+    padding:4px 9px; border-radius:999px;
+    background:rgba(10,17,32,0.75); backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,0.15); color:#fff;
+  }
+  .tool-badge.powerbi{ color:#f0c869; border-color:rgba(240,200,105,0.35); }
+  .tool-badge.tableau{ color:#8fb4d9; border-color:rgba(143,180,217,0.35); }
+  .gallery-group-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--accent-bright);
+    margin:40px 0 4px; display:flex; align-items:center; gap:10px;
+  }
+  .gallery-group-label:first-child{ margin-top:8px; }
+  .gallery-group-label::after{
+    content:""; flex:1; height:1px; background:var(--line);
+  }
+  .gallery-group-note{ color:var(--ink-dim); font-size:13px; margin:0 0 20px; }
   .card-preview{
-    width:100%; height:200px; background:rgba(255,255,255,0.02);
+    width:100%; height:150px; background:rgba(255,255,255,0.02);
     display:flex; align-items:center; justify-content:center;
     font-size:14px; color:var(--ink-dim); overflow:hidden;
   }
@@ -182,7 +203,7 @@
   <div id="home" class="section active">
     <header>
       <p class="eyebrow">Hello, I'm Kiera</p>
-      <h1>Data Analytics Expert/h1>
+      <h1>Analytics Leader</h1>
       <p class="sub">Business Intelligence Manager with 7+ years of experience transforming data into actionable insights. Specialized in Tableau, Power BI, SQL, Snowflake, and Python.</p>
     </header>
 
@@ -216,29 +237,61 @@
     <header>
       <p class="eyebrow">Kiera Coyne · Dashboard Portfolio</p>
       <h1>Data, visualized<br>a few ways at a time.</h1>
-      <p class="sub">A small collection of interactive, dashboards built in display the features that Tableau and Power-Bi uses. </p>
+      <p class="sub">The same two datasets, built twice — once to Tableau's native capabilities, once to Power BI's — so you can compare how each tool actually shapes the result.</p>
     </header>
 
+    <p class="gallery-group-label">Tableau-style</p>
+    <p class="gallery-group-note">Cross-filtering, dual-range slicers, and click-to-isolate — built to what Tableau does natively.</p>
     <div class="gallery">
       <a class="card" href="./wine-quality-dashboard.html">
+        <span class="tool-badge tableau">Tableau</span>
         <div class="card-preview">
           <img src="./wine-preview.svg" alt="Wine Quality Dashboard Preview">
         </div>
         <div class="card-content">
-          <span class="card-tag">Wine Quality · UCI Dataset</span>
+          <span class="card-tag">Wine Quality</span>
           <h2 class="card-title">A Tasting Ledger</h2>
           <p class="card-desc">1,377 red and white Vinho Verde bottles, filtered by flight and quality score.</p>
         </div>
       </a>
 
       <a class="card" href="./aviation-history-dashboard.html">
+        <span class="tool-badge tableau">Tableau</span>
         <div class="card-preview">
           <img src="./aviation-preview.svg" alt="Aviation History Dashboard Preview">
         </div>
         <div class="card-content">
-          <span class="card-tag">Aviation History · 1908–1926</span>
+          <span class="card-tag">Aviation History</span>
           <h2 class="card-title">The Pioneer Era</h2>
           <p class="card-desc">The first 100 recorded fatal aviation accidents, from the Wright Flyer through the early airmail age.</p>
+        </div>
+      </a>
+    </div>
+
+    <p class="gallery-group-label">Power BI–style</p>
+    <p class="gallery-group-note">Filter pane, bookmarks, conditional formatting, and focus mode — built to what Power BI does natively.</p>
+    <div class="gallery">
+      <a class="card" href="./wine-quality-powerbi.html">
+        <span class="tool-badge powerbi">Power BI</span>
+        <div class="card-preview" style="background:linear-gradient(135deg,#3d0f1f,#7B1E3D 55%,#8a2a4a);">
+          <svg width="34" height="34" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="3" height="6" rx="0.5" fill="#e0be63"/><rect x="6.5" y="4" width="3" height="10" rx="0.5" fill="#e0be63"/><rect x="12" y="1" width="3" height="13" rx="0.5" fill="#e0be63"/></svg>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Wine Quality</span>
+          <h2 class="card-title">Wine Quality Analysis</h2>
+          <p class="card-desc">The same dataset rebuilt to Power BI's native capabilities — filter pane, bookmarks, conditional formatting, and focus mode.</p>
+        </div>
+      </a>
+
+      <a class="card" href="./aviation-history-powerbi.html">
+        <span class="tool-badge powerbi">Power BI</span>
+        <div class="card-preview" style="background:linear-gradient(135deg,#0d1a2b,#1C3350 55%,#2c4763);">
+          <svg width="34" height="34" viewBox="0 0 16 16" fill="none"><path d="M8 1.5 9 6l5.5.5-4 3.5 1.2 5.5L8 12.5 4.3 15.5 5.5 10 1.5 6.5 7 6z" fill="#d9a857"/></svg>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Aviation History</span>
+          <h2 class="card-title">Aviation Accident Analysis</h2>
+          <p class="card-desc">The pioneer-era archive rebuilt to Power BI's native capabilities — slicers, bookmarks, conditional formatting, and focus mode.</p>
         </div>
       </a>
     </div>
@@ -250,20 +303,27 @@
 </div>
 
 <script>
+  function showSection(section){
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(section);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.nav-btn[data-section="${section}"]`);
+    if(btn) btn.classList.add('active');
+  }
+
   document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const section = this.getAttribute('data-section');
-      
-      // Hide all sections
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      // Show selected section
-      document.getElementById(section).classList.add('active');
-      
-      // Update active button
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+    btn.addEventListener('click', function(){
+      showSection(this.getAttribute('data-section'));
+      history.replaceState(null, '', this.getAttribute('data-section') === 'portfolio' ? '#portfolio' : './index.html');
     });
   });
+
+  // Deep-link support: ./index.html#portfolio jumps straight to the Portfolio tab,
+  // so the About page (and anywhere else) can link here reliably.
+  if(location.hash === '#portfolio'){
+    showSection('portfolio');
+  }
 </script>
 </body>
 </html>
