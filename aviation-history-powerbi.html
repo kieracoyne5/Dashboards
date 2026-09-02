@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviation Accident Analysis — Power BI Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --canvas:#F3F2F1;
+    --visual-bg:#FFFFFF;
+    --border:#E1DFDD;
+    --text:#252423;
+    --text-dim:#605E5C;
+    --pbi-blue:#118DFF;
+    --navy:#1C3350;
+    --navy-lt:#5B7A94;
+    --brass:#B8863B;
+    --brass-lt:#D9A857;
+    --brick:#A4453A;
+    --grid:#EDEBE9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--canvas);
+    color:var(--text);
+    font-family:'Segoe UI', 'Segoe UI Web', system-ui, -apple-system, Arial, sans-serif;
+    min-height:100vh;
+  }
+
+  /* ---- Report title bar ---- */
+  .titlebar{
+    background:linear-gradient(120deg, #0d1a2b 0%, var(--navy) 55%, #2c4763 100%);
+    padding:22px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 2px 8px rgba(13,26,43,0.35);
+    position:relative;
+    overflow:hidden;
+    border-bottom:3px solid var(--brass);
+  }
+  .titlebar::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 85% 0%, rgba(217,168,87,0.22), transparent 55%),
+      radial-gradient(circle at 10% 120%, rgba(91,122,148,0.18), transparent 50%);
+    pointer-events:none;
+  }
+  .titlebar-left{ display:flex; align-items:center; gap:14px; position:relative; z-index:1; }
+  .pbi-icon{
+    width:38px; height:38px; border-radius:8px;
+    background:linear-gradient(135deg, var(--brass-lt), var(--brass) 70%, #7a5c1c);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  .titlebar h1{ font-size:20px; font-weight:600; margin:0; color:#fff; letter-spacing:-.01em; }
+  .titlebar .sub{ font-size:12px; color:rgba(255,255,255,0.75); margin-top:2px; }
+  .titlebar-right{
+    font-size:11px; color:rgba(255,255,255,0.85); display:flex; align-items:center; gap:20px;
+    position:relative; z-index:1;
+  }
+  .stat-chip{ text-align:right; }
+  .stat-chip .stat-num{ font-size:18px; font-weight:600; color:var(--brass-lt); line-height:1.1; }
+  .stat-chip .stat-lbl{ font-size:9.5px; color:rgba(255,255,255,0.65); text-transform:uppercase; letter-spacing:.06em; margin-top:1px; }
+  .pbi-badge{
+    font-size:10px; font-weight:600; color:#fff; background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.25); border-radius:3px; padding:4px 9px; letter-spacing:.03em;
+  }
+
+  /* ---- Layout: filter bar + canvas ---- */
+  .report-body{ display:flex; flex-direction:column; }
+
+  .filter-pane{
+    width:100%;
+    background:var(--visual-bg);
+    border-bottom:1px solid var(--border);
+    padding:14px 24px;
+    display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;
+    box-shadow:0 1.6px 3.6px rgba(0,0,0,0.05);
+  }
+  .filter-pane-title{
+    font-size:12px; font-weight:600; color:var(--text);
+    text-transform:uppercase; letter-spacing:.03em;
+    display:flex; align-items:center; gap:6px;
+    flex-basis:100%; margin-bottom:2px;
+  }
+  .filter-card{
+    background:var(--visual-bg); border:1px solid var(--border); border-radius:2px;
+    padding:10px 14px; min-width:220px;
+  }
+  .filter-card-title{ font-size:11.5px; font-weight:600; color:var(--text); margin-bottom:8px; }
+  .slicer-option{
+    display:flex; align-items:center; gap:8px; padding:3px 0; cursor:pointer; font-size:12.5px; color:var(--text);
+  }
+  .slicer-option input{ accent-color:var(--pbi-blue); width:14px; height:14px; cursor:pointer; }
+  .slicer-hint{ font-size:10px; color:var(--text-dim); margin-top:4px; }
+
+  .dual-range{ position:relative; height:20px; margin-top:4px; width:220px; }
+  .dual-range input[type=range]{
+    position:absolute; top:6px; left:0; right:0; width:100%; height:2px;
+    -webkit-appearance:none; background:transparent; pointer-events:none; margin:0;
+  }
+  .dual-range input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:13px; height:13px; border-radius:50%;
+    background:var(--pbi-blue); border:2px solid #fff; box-shadow:0 0 0 1px var(--pbi-blue);
+    cursor:pointer; margin-top:-5.5px; pointer-events:all;
+  }
+  .dual-range .track{ position:absolute; top:9px; left:0; right:0; height:3px; background:var(--grid); border-radius:2px; }
+  .dual-range .track-fill{ position:absolute; top:9px; height:3px; background:var(--pbi-blue); border-radius:2px; }
+  .slicer-vals{ font-size:11px; color:var(--text-dim); margin-top:6px; font-variant-numeric:tabular-nums; }
+
+  .reset-link{
+    font-size:11.5px; color:var(--pbi-blue); cursor:pointer; text-decoration:none;
+    display:inline-flex; align-items:center; gap:4px;
+    align-self:center; margin-left:auto; margin-top:6px;
+  }
+  .reset-link:hover{ text-decoration:underline; }
+
+  /* ---- Canvas ---- */
+  .canvas{ padding:20px 24px 60px; }
+  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .visual{
+    background:var(--visual-bg); border:1px solid var(--border); border-radius:2px;
+    box-shadow:0 1.6px 3.6px rgba(0,0,0,0.06);
+    padding:14px 16px 16px;
+    border-top:3px solid var(--navy);
+  }
+  .visual.accent-gold{ border-top-color:var(--brass); }
+  .card-visual{ display:flex; align-items:center; gap:14px; min-height:88px; border-top:none; border-left:4px solid var(--navy); }
+  .card-visual.accent-gold{ border-left-color:var(--brass); border-top:none; }
+  .card-icon{
+    width:34px; height:34px; border-radius:7px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(28,51,80,0.08);
+  }
+  .card-visual.accent-gold .card-icon{ background:rgba(184,134,59,0.12); }
+  .card-label{ font-size:11px; color:var(--text-dim); margin-bottom:6px; letter-spacing:.01em; }
+  .card-value{ font-size:24px; font-weight:600; color:var(--text); line-height:1.15; }
+  .card-value small{ font-size:12px; font-weight:400; color:var(--text-dim); margin-left:4px; display:block; margin-top:2px; }
+
+  .visual-title{ font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+  .visual-caption{ font-size:11px; color:var(--text-dim); margin-bottom:10px; line-height:1.5; }
+
+  .chart-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .chart-box{ position:relative; height:260px; }
+  .chart-box.tall{ height:300px; }
+  .full{ grid-column:1 / -1; }
+
+  .pbi-tag{
+    display:inline-block; font-size:9.5px; font-weight:600; color:var(--pbi-blue);
+    background:rgba(17,141,255,0.08); border-radius:2px; padding:2px 6px; margin-left:6px;
+    text-transform:uppercase; letter-spacing:.03em; vertical-align:middle;
+  }
+
+  /* table visual */
+  .pbi-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .pbi-table th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--text-dim); border-bottom:2px solid var(--border); padding:6px 10px; position:sticky; top:0; background:#fff;
+  }
+  .pbi-table td{ padding:7px 10px; border-bottom:1px solid var(--grid); color:var(--text); vertical-align:top; }
+  .pbi-table tr:nth-child(even) td{ background:#FAFAFA; }
+  .pbi-table .fat-col{ color:var(--brick); font-weight:600; white-space:nowrap; }
+  .table-wrap{ max-height:380px; overflow-y:auto; border:1px solid var(--grid); }
+  .table-wrap::-webkit-scrollbar{ width:7px; }
+  .table-wrap::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+
+  footer{
+    padding:14px 24px; border-top:1px solid var(--border); background:var(--visual-bg);
+    font-size:11px; color:var(--text-dim); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+  footer a{ color:var(--pbi-blue); text-decoration:none; }
+
+  /* ---- Bookmarks bar ---- */
+  .bookmarks-bar{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    padding:10px 24px; background:var(--visual-bg); border-bottom:1px solid var(--border);
+  }
+  .bookmarks-label{
+    font-size:11px; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em;
+    display:flex; align-items:center; gap:5px; margin-right:4px;
+  }
+  .bookmark-btn{
+    font-size:12px; color:var(--text); background:#fff; border:1px solid var(--border);
+    border-radius:14px; padding:6px 13px; cursor:pointer; transition:all .12s ease;
+  }
+  .bookmark-btn:hover{ border-color:var(--navy); color:var(--navy); }
+  .bookmark-btn.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+  .bookmark-toggle{
+    margin-left:auto; font-size:12px; color:var(--pbi-blue); background:none; border:1px dashed var(--pbi-blue);
+    border-radius:14px; padding:6px 13px; cursor:pointer;
+  }
+  .bookmark-toggle:hover{ background:rgba(17,141,255,0.06); }
+
+  /* ---- Focus mode ---- */
+  .visual{ position:relative; }
+  .focus-btn{
+    position:absolute; top:10px; right:12px; width:24px; height:24px; border-radius:4px;
+    background:rgba(255,255,255,0.9); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; transition:opacity .12s ease; z-index:2;
+  }
+  .visual:hover .focus-btn{ opacity:1; }
+  .focus-btn:hover{ border-color:var(--pbi-blue); }
+  .focus-overlay{
+    display:none; position:fixed; inset:0; background:rgba(37,36,35,0.55); z-index:50;
+    align-items:center; justify-content:center; padding:40px;
+  }
+  .focus-overlay.open{ display:flex; }
+  .focus-modal{
+    background:#fff; border-radius:4px; width:min(920px,100%); max-height:85vh;
+    display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,0.35);
+  }
+  .focus-modal-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 20px; border-bottom:1px solid var(--border);
+  }
+  .focus-modal-head h3{ font-size:15px; margin:0; color:var(--text); }
+  .focus-close{
+    width:28px; height:28px; border-radius:4px; border:1px solid var(--border); background:#fff;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-dim);
+  }
+  .focus-close:hover{ border-color:var(--navy); color:var(--navy); }
+  .focus-modal-body{ padding:24px; height:480px; position:relative; }
+
+  /* ---- Conditional formatting ---- */
+  .kpi-good{ color:#0F7B3F !important; }
+  .kpi-warn{ color:#B8860B !important; }
+  .kpi-bad{ color:#C0392B !important; }
+  .cf-badge{
+    font-size:9px; font-weight:700; padding:1px 6px; border-radius:9px; margin-left:6px;
+    vertical-align:middle; letter-spacing:.02em;
+  }
+  .cf-badge.good{ background:rgba(15,123,63,0.12); color:#0F7B3F; }
+  .cf-badge.warn{ background:rgba(184,134,11,0.12); color:#B8860B; }
+  .cf-badge.bad{ background:rgba(192,57,43,0.12); color:#C0392B; }
+
+  .hidden-panel{ display:none; }
+  .hidden-panel.shown{ display:block; }
+
+  @media (max-width:900px){
+    .kpi-row{ grid-template-columns:repeat(2,1fr); }
+    .chart-grid{ grid-template-columns:1fr; }
+    .dual-range{ width:160px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="titlebar">
+    <div class="titlebar-left">
+      <div class="pbi-icon">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1.5 9 6l5.5.5-4 3.5 1.2 5.5L8 12.5 4.3 15.5 5.5 10 1.5 6.5 7 6z" fill="#0d1a2b"/></svg>
+      </div>
+      <div>
+        <h1>Aviation Accident Analysis</h1>
+        <div class="sub">The Pioneer Era, 1908–1926 · Plane Crash Info archive</div>
+      </div>
+    </div>
+    <div class="titlebar-right">
+      <div class="stat-chip"><div class="stat-num">100</div><div class="stat-lbl">Entries</div></div>
+      <div class="stat-chip"><div class="stat-num">19</div><div class="stat-lbl">Years</div></div>
+      <span class="pbi-badge">REPORT VIEW</span>
+    </div>
+  </div>
+
+  <div class="report-body">
+    <div class="filter-pane">
+      <div class="filter-pane-title">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 2h14l-5.5 6.5V13l-3 2V8.5L1 2z" stroke="#605E5C" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Filters on this page
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-card-title">Operator type</div>
+        <label class="slicer-option"><input type="checkbox" data-cat="Military" checked> Military</label>
+        <label class="slicer-option"><input type="checkbox" data-cat="Postal / Mail" checked> Postal / Mail</label>
+        <label class="slicer-option"><input type="checkbox" data-cat="Early Airline" checked> Early Airline</label>
+        <label class="slicer-option"><input type="checkbox" data-cat="Private" checked> Private</label>
+        <div class="slicer-hint">List slicer — multi-select</div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-card-title">Year</div>
+        <div class="dual-range">
+          <div class="track"></div>
+          <div class="track-fill" id="trackFill"></div>
+          <input type="range" id="yMin" min="1908" max="1926" value="1908" step="1">
+          <input type="range" id="yMax" min="1908" max="1926" value="1926" step="1">
+        </div>
+        <div class="slicer-vals" id="yLabel">Between 1908 and 1926</div>
+        <div class="slicer-hint">Range slicer — numeric field</div>
+      </div>
+
+      <a class="reset-link" id="resetBtn">↺ Reset filters</a>
+    </div>
+
+    <div class="bookmarks-bar">
+      <span class="bookmarks-label">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 1.5h8v13L8 12l-4 2.5v-13z" stroke="#605E5C" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Bookmarks
+      </span>
+      <button class="bookmark-btn active" data-bookmark="all">All entries</button>
+      <button class="bookmark-btn" data-bookmark="wwi">WWI era (1914–1918)</button>
+      <button class="bookmark-btn" data-bookmark="postwar">Postwar (1919–1926)</button>
+      <button class="bookmark-btn" data-bookmark="military">Military only</button>
+      <button class="bookmark-toggle" id="statsToggle">+ Show advanced stats</button>
+    </div>
+
+    <div class="canvas">
+
+      <div class="kpi-row" id="kpiRow"></div>
+
+      <div class="chart-grid hidden-panel" id="advancedPanel">
+        <div class="visual full">
+          <button class="focus-btn" data-focus="advTable" title="Focus mode">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="#605E5C" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+          <div class="visual-title">Fatalities by operator type<span class="pbi-tag">Table + conditional formatting</span></div>
+          <div class="visual-caption">Toggled via bookmark — background color scale on the average-per-entry column, a built-in Power BI table formatting rule.</div>
+          <div id="advTable"></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="visual">
+          <button class="focus-btn" data-focus="yearChart" title="Focus mode">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="#605E5C" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+          <div class="visual-title">Entries by year<span class="pbi-tag">Clustered column</span></div>
+          <div class="visual-caption">Click a column to cross-highlight the rest of the page.</div>
+          <div class="chart-box"><canvas id="yearChart"></canvas></div>
+        </div>
+
+        <div class="visual accent-gold">
+          <button class="focus-btn" data-focus="catChart" title="Focus mode">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="#605E5C" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+          <div class="visual-title">By operator type<span class="pbi-tag">Donut chart</span></div>
+          <div class="visual-caption">Share of entries in the current filter.</div>
+          <div class="chart-box"><canvas id="catChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="visual">
+          <button class="focus-btn" data-focus="typeChart" title="Focus mode">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="#605E5C" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+          <div class="visual-title">Aircraft type<span class="pbi-tag">Bar chart</span></div>
+          <div class="visual-caption">Most-recorded types, current filter.</div>
+          <div class="chart-box tall"><canvas id="typeChart"></canvas></div>
+        </div>
+
+        <div class="visual accent-gold">
+          <button class="focus-btn" data-focus="regionChart" title="Focus mode">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="#605E5C" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+          <div class="visual-title">By region<span class="pbi-tag">Bar chart</span></div>
+          <div class="visual-caption">Location as recorded in the archive.</div>
+          <div class="chart-box tall"><canvas id="regionChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="visual full">
+          <div class="visual-title">Incident log<span class="pbi-tag">Table + color scale</span></div>
+          <div class="visual-caption" id="logCount"></div>
+          <div class="table-wrap">
+            <table class="pbi-table">
+              <thead><tr><th>Date</th><th>Location</th><th>Operator</th><th>Aircraft</th><th style="text-align:right;">Lost / Aboard</th></tr></thead>
+              <tbody id="logBody"></tbody>
+            </table>
+    </div>
+  </div>
+
+  <div class="focus-overlay" id="focusOverlay">
+    <div class="focus-modal">
+      <div class="focus-modal-head">
+        <h3 id="focusTitle">Visual</h3>
+        <button class="focus-close" id="focusClose">✕</button>
+      </div>
+      <div class="focus-modal-body" id="focusBody"></div>
+    </div>
+  </div>
+
+
+  <footer>
+    <span>Source: Plane Crash Info archive (planecrashinfo.com), via a cleaned public dataset · built to Power BI–native capabilities only</span>
+    <span id="countFooter"></span>
+  </footer>
+
+<script>
+const RAW = [{"y":1908,"date":"09/17/1908","loc":"Fort Myer, Virginia","region":"United States","op":"Military - U.S. Army","cat":"Military","type":"Wright Flyer III","aboard":2.0,"fat":1.0,"ground":0.0,"summary":"During a demonstration flight, a U.S. Army flyer flown by Orville Wright nose-dived into the ground from a height of approximately 75 feet, killing Lt. Thomas E. Selfridge, 26, who was a passenger. This was the first recorded airplane fatality in history."},{"y":1912,"date":"07/12/1912","loc":"AtlantiCity, New Jersey","region":"United States","op":"Military - U.S. Navy","cat":"Military","type":"Dirigible","aboard":5.0,"fat":5.0,"ground":0.0,"summary":"First U.S. dirigible Akron exploded just offshore at an altitude of 1,000 ft. during a test flight."},{"y":1913,"date":"08/06/1913","loc":"Victoria, British Columbia, Canada","region":"Canada","op":"Private","cat":"Private","type":"Curtiss seaplane","aboard":1.0,"fat":1.0,"ground":0.0,"summary":"The first fatal airplane accident in Canada occurred when American barnstormer, John M. Bryant, California aviator was killed."},{"y":1913,"date":"09/09/1913","loc":"Over the North Sea","region":"Over the North Sea","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-1 (airship)","aboard":20.0,"fat":14.0,"ground":0.0,"summary":"The airship flew into a thunderstorm and encountered a severe downdraft crashing 20 miles north of Helgoland Island into the sea."},{"y":1913,"date":"10/17/1913","loc":"Near Johannisthal, Germany","region":"Germany","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-2 (airship)","aboard":30.0,"fat":30.0,"ground":0.0,"summary":"Hydrogen gas which was being vented was sucked into the forward engine and ignited causing the airship to explode and burn at 3,000 ft."},{"y":1915,"date":"03/05/1915","loc":"Tienen, Belgium","region":"Belgium","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-8 (airship)","aboard":41.0,"fat":21.0,"ground":0.0,"summary":"Crashed into trees while attempting to land after being shot down by British and French aircraft."},{"y":1915,"date":"09/03/1915","loc":"Off Cuxhaven, Germany","region":"Germany","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-10 (airship)","aboard":19.0,"fat":19.0,"ground":0.0,"summary":"Exploded and burned near Neuwerk Island, when hydrogen gas, being vented, was ignited by lightning."},{"y":1916,"date":"07/28/1916","loc":"Near Jambol, Bulgeria","region":"Bulgeria","op":"Military - German Army","cat":"Military","type":"Schutte-Lanz S-L-10 (airship)","aboard":20.0,"fat":20.0,"ground":0.0,"summary":"Crashed near the Black Sea, cause unknown."},{"y":1916,"date":"09/24/1916","loc":"Billericay, England","region":"England","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-32 (airship)","aboard":22.0,"fat":22.0,"ground":0.0,"summary":"Shot down by British aircraft crashing in flames."},{"y":1916,"date":"10/01/1916","loc":"Potters Bar, England","region":"England","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-31 (airship)","aboard":19.0,"fat":19.0,"ground":0.0,"summary":"Shot down in flames by the British 39th Home Defence Squadron."},{"y":1916,"date":"11/21/1916","loc":"Mainz, Germany","region":"Germany","op":"Military - German Army","cat":"Military","type":"Super Zeppelin (airship)","aboard":28.0,"fat":27.0,"ground":0.0,"summary":"Crashed in a storm."},{"y":1916,"date":"11/28/1916","loc":"Off West Hartlepool, England","region":"England","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-34 (airship)","aboard":20.0,"fat":20.0,"ground":0.0,"summary":"Shot down by British anti-aircraft fire and aircraft and crashed into the North Sea."},{"y":1917,"date":"03/04/1917","loc":"Near Gent, Belgium","region":"Belgium","op":"Military - German Army","cat":"Military","type":"Airship","aboard":20.0,"fat":20.0,"ground":0.0,"summary":"Caught fire and crashed."},{"y":1917,"date":"03/30/1917","loc":"Off Northern Germany","region":"Off Northern Germany","op":"Military - German Navy","cat":"Military","type":"Schutte-Lanz S-L-9 (airship)","aboard":23.0,"fat":23.0,"ground":0.0,"summary":"Struck by lightning and crashed into the BaltiSea."},{"y":1917,"date":"05/14/1917","loc":"Near Texel Island, North Sea","region":"North Sea","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-22 (airship)","aboard":21.0,"fat":21.0,"ground":0.0,"summary":"Crashed into the sea from an altitude of 3,000 ft. after being hit by British aircraft fire."},{"y":1917,"date":"06/14/1917","loc":"Off Vlieland Island, North Sea","region":"North Sea","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-43 (airship)","aboard":24.0,"fat":24.0,"ground":0.0,"summary":"Shot down by British aircraft."},{"y":1917,"date":"08/21/1917","loc":"Off western Denmark","region":"Off western Denmark","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-23 (airship)","aboard":18.0,"fat":18.0,"ground":0.0,"summary":"Shot down by British aircraft."},{"y":1917,"date":"10/20/1917","loc":"Near Luneville, France","region":"France","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-44 (airship)","aboard":18.0,"fat":18.0,"ground":0.0,"summary":"Shot down by French anti-aircraft fire."},{"y":1918,"date":"04/07/1918","loc":"Over the Mediterranean","region":"Over the Mediterranean","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-59 (airship)","aboard":23.0,"fat":23.0,"ground":0.0,"summary":"Exploded and crashed into the sea off the southern coast of Italy."},{"y":1918,"date":"05/10/1918","loc":"Off Helgoland Island, Germany","region":"Germany","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-70 (airship)","aboard":22.0,"fat":22.0,"ground":0.0,"summary":"Shot down by British aircraft crashing from a height of 17,000 ft."},{"y":1918,"date":"08/11/1918","loc":"Ameland Island, North Sea","region":"North Sea","op":"Military - German Navy","cat":"Military","type":"Zeppelin L-53 (airship)","aboard":19.0,"fat":19.0,"ground":0.0,"summary":"Shot down by british aircraft."},{"y":1918,"date":"12/16/1918","loc":"Elizabeth, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1919,"date":"05/25/1919","loc":"Cleveland, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":"Caught fire in midair. The pilot leaped from the plane to his death as the plane began to go into a dive."},{"y":1919,"date":"07/19/1919","loc":"Dix Run, Pennsylvania","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1919,"date":"10/02/1919","loc":"Newcastle, England","region":"England","op":"Aircraft Transport and Travel","cat":"Early Airline","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1919,"date":"10/14/1919","loc":"Cantonsville, Maryland","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Curtiss R-4LM","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1919,"date":"10/20/1919","loc":"English Channel","region":"English Channel","op":"Aircraft Transport and Travel","cat":"Early Airline","type":"De Havilland DH-4","aboard":null,"fat":0,"ground":0,"summary":""},{"y":1919,"date":"10/30/1919","loc":"Long Valley, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH.4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"03/10/1920","loc":"New Paris, Indiana","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"03/30/1920","loc":"Newark, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"04/10/1920","loc":"Newark, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Curtiss R-4LM","aboard":2.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"04/11/1920","loc":"Heller Field, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Curtiss JN-4H","aboard":2.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"05/12/1920","loc":"Oskaloosa, Iowa","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":2.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"06/06/1920","loc":"Cleveland, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"08/16/1920","loc":"Bedford, England","region":"England","op":"By Air","cat":"Early Airline","type":"Armstrong-Whitworth F-K-8","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"08/16/1920","loc":"College Park, Maryland","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"09/01/1920","loc":"Morristown, New Jersey","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Junkers JL-6","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1920,"date":"09/15/1920","loc":"Pemberville, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Junkers F-13","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1920,"date":"09/27/1920","loc":"Hillersburg, Pennsylvania","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"10/02/1920","loc":"Off Port Vendres, France","region":"France","op":"Latecoere Airlines","cat":"Early Airline","type":"Salmson 2-A-2","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1920,"date":"10/05/1920","loc":"Valencia, Spain","region":"Spain","op":"Latecoere Airlines","cat":"Early Airline","type":"Breguet 14","aboard":2.0,"fat":2.0,"ground":0.0,"summary":"Crashed while landing."},{"y":1920,"date":"10/15/1920","loc":"Batavia, Illinois","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"11/07/1920","loc":"Tie Siding, Wyoming","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1920,"date":"12/14/1920","loc":"Cricklewood, England","region":"England","op":"Handley Page Transport","cat":"Early Airline","type":"Handley Page HP-16","aboard":8.0,"fat":4.0,"ground":0.0,"summary":"Crashed into a tree on take off in fog."},{"y":1920,"date":"12/24/1920","loc":"Barcelona, Spain","region":"Spain","op":"Aeropostale","cat":"Early Airline","type":"Breguet 14","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"02/03/1921","loc":"Mendotta, Minnisota","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"02/09/1921","loc":"La Crosse, Wisconsin","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Junkers F-13","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1921,"date":"02/15/1921","loc":"Off Gibraltar","region":"Off Gibraltar","op":"Aeropostale","cat":"Early Airline","type":"Breguet 14","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1921,"date":"02/22/1921","loc":"Elko, Nevada","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"04/06/1921","loc":"Point Cook, Australia","region":"Australia","op":"Military - Royal Australian Air Force","cat":"Military","type":"Unknown","aboard":2.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"04/21/1921","loc":"Mitchel Field, NY","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"04/29/1921","loc":"Cleveland, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"05/17/1921","loc":"Rock Springs, Wyoming","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Unknown","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"07/16/1921","loc":"San Francisco, California","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1921,"date":"08/14/1921","loc":"Toulouse, France","region":"France","op":"Aeropostale","cat":"Early Airline","type":"Breguet 14","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1921,"date":"08/24/1921","loc":"River Humber, England","region":"England","op":"Military - Royal Airship Works","cat":"Military","type":"Royal Airship Works ZR-2 (airship)","aboard":46.0,"fat":46.0,"ground":1.0,"summary":"Crashed due to structural failure followed by two explosions and a fire."},{"y":1921,"date":"09/06/1921","loc":"Paris, France","region":"France","op":"Franco-Roumaine","cat":"Early Airline","type":"Potez IX","aboard":5.0,"fat":5.0,"ground":0.0,"summary":"Crashed while making an approach to Le Bourget Airport in Paris."},{"y":1921,"date":"12/05/1921","loc":"Near Murchinson River, Australia","region":"Australia","op":"West Australian Airways","cat":"Early Airline","type":"Bristol 28 Tourer","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1922,"date":"01/14/1922","loc":"Paris, France","region":"France","op":"Handley Page Transport","cat":"Early Airline","type":"Handley Page O/10","aboard":5.0,"fat":5.0,"ground":5.0,"summary":"Crashed at Le Bourget field."},{"y":1922,"date":"02/21/1922","loc":"Near Norfolk, Virginia","region":"United States","op":"Military - U.S. Army Air Service","cat":"Military","type":"Dirigible Roma (airship)","aboard":45.0,"fat":34.0,"ground":0.0,"summary":"Crashed from a height of 500 ft. after experiencing control problems cause by malfunctioning controls."},{"y":1922,"date":"04/07/1922","loc":"Grandvilliers, France","region":"France","op":"Daimler Airways / Grands Express Aeriens","cat":"Early Airline","type":"de Havilland DH-18 / Farman F-60 Goliath","aboard":7.0,"fat":7.0,"ground":0.0,"summary":"A midair collision occurred in poor visibility approximately 18 miles north of Beauvais, France."},{"y":1922,"date":"04/08/1922","loc":"Pao Ting Fou, China","region":"China","op":"Unknown","cat":"Unknown","type":"Unknown","aboard":17.0,"fat":17.0,"ground":0.0,"summary":"All seventeen aboard were Chinese nationals."},{"y":1922,"date":"04/13/1922","loc":"Brooklands, England","region":"England","op":"Vickers","cat":"Early Airline","type":"Vickers Viking","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1925,"date":"10/01/1925","loc":"Nittany Mt, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1922,"date":"06/03/1922","loc":"Off Folkestone, Kent, England","region":"England","op":"Cie des Messageries Aeriennes","cat":"Early Airline","type":"Bleriot Spad 27","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1922,"date":"07/26/1922","loc":"Cadix, Spain","region":"Spain","op":"Grands Express Aeriens","cat":"Early Airline","type":"Breguet 14","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1922,"date":"09/07/1922","loc":"Indianapolis, Indiana","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1922,"date":"10/02/1922","loc":"Venice, Italy","region":"Italy","op":"Unknown","cat":"Unknown","type":"de Havilland DH-9","aboard":4.0,"fat":4.0,"ground":0.0,"summary":""},{"y":1922,"date":"10/25/1922","loc":"Larache, Morocco","region":"Morocco","op":"Grands Express Aeriens","cat":"Early Airline","type":"Breguet 14","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1922,"date":"12/03/1922","loc":"Fez, Morocco","region":"Morocco","op":"Grands Express Aeriens","cat":"Early Airline","type":"Breguet 14","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"01/10/1923","loc":"Ajaccio, France","region":"France","op":"Amee de l'Air","cat":"Early Airline","type":"Lior\u00e9-et-Olivier H-13","aboard":4.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1923,"date":"01/17/1923","loc":"Barcelona, Spain","region":"Spain","op":"Grands Express Aeriens","cat":"Early Airline","type":"Breguet 14","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"01/18/1923","loc":"Cheyenne, Wyoming","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"02/26/1923","loc":"Meadville, Pennsylvania","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"05/14/1923","loc":"Monsures, France","region":"France","op":"Grands Express Aeriens","cat":"Early Airline","type":"Farman F-60 Goliath","aboard":6.0,"fat":6.0,"ground":0.0,"summary":""},{"y":1923,"date":"08/27/1923","loc":"Bucharest, Romania","region":"Romania","op":"Campagnie France Roumaine","cat":"Early Airline","type":"Bl\u00e9riot Spad 46","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1923,"date":"09/07/1923","loc":"Colton, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"09/14/1923","loc":"Berks, England","region":"England","op":"Daimler Airways","cat":"Early Airline","type":"de Havilland DH-34","aboard":6.0,"fat":6.0,"ground":0.0,"summary":""},{"y":1923,"date":"11/18/1923","loc":"Russia","region":"Russia","op":"CCCP","cat":"Early Airline","type":"Junkers F-13","aboard":4.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1923,"date":"12/06/1923","loc":"Castalia, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1923,"date":"12/23/1923","loc":"Over the Mediterranean Sea","region":"Over the Mediterranean Sea","op":"Military - French Navy","cat":"Military","type":"Zeppelin Dixmunde (airship)","aboard":52.0,"fat":52.0,"ground":0.0,"summary":"Crashed while on a flight from Toulon, France to Algiers, Algeria. Struck by lightning."},{"y":1923,"date":"12/24/1923","loc":"Egbert, WY","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1924,"date":"03/07/1924","loc":"Grampian, Pennsylvania","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1924,"date":"04/24/1924","loc":"Over the English Channel","region":"Over the English Channel","op":"KLM Royal Dutch Airlines","cat":"Early Airline","type":"Fokker F.III","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1924,"date":"06/08/1924","loc":"Barranquilla, Colombia","region":"Colombia","op":"SCADTA","cat":"Early Airline","type":"Junkers F-13","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1924,"date":"08/01/1924","loc":"United States","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1924,"date":"11/06/1924","loc":"Cabrerolles, France","region":"France","op":"Grands Express Aeriens","cat":"Early Airline","type":"Unknown","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1924,"date":"12/21/1924","loc":"Goshen, Indiana","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"De Havilland DH-4","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1924,"date":"12/24/1924","loc":"Purley, England","region":"England","op":"Imperial Airways","cat":"Early Airline","type":"de Havilland DH-34B","aboard":8.0,"fat":8.0,"ground":0.0,"summary":"Fuel starvation. Captain Stewart and seven passengers were killed in an attempted forced landing."},{"y":1925,"date":"03/22/1925","loc":"Near Tiflies, Georgia, USSR","region":"USSR","op":"Zakavia","cat":"Early Airline","type":"Junkers F-13","aboard":5.0,"fat":5.0,"ground":0.0,"summary":""},{"y":1925,"date":"04/25/1925","loc":"Alicante, Spain","region":"Spain","op":"Grands Express Aeriens","cat":"Early Airline","type":"Breguet 14","aboard":4.0,"fat":4.0,"ground":0.0,"summary":""},{"y":1925,"date":"05/25/1925","loc":"Alicante, Spain","region":"Spain","op":"Lignes Aeriennes Latecoere","cat":"Early Airline","type":"Breguet 14","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1925,"date":"06/25/1925","loc":"Landr\u00e9cies, France","region":"France","op":"KLM Royal Dutch Airlines","cat":"Early Airline","type":"Fokker (KLM) F.III","aboard":4.0,"fat":4.0,"ground":0.0,"summary":"Crashed in poor weather."},{"y":1925,"date":"06/26/1925","loc":"Alicante, Spain","region":"Spain","op":"Grands Express Aeriens","cat":"Early Airline","type":"Lior\u00e9-et-Olivier H-13","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1925,"date":"07/20/1925","loc":"Rosas, Spain","region":"Spain","op":"Lignes Aeriennes Latecoere","cat":"Early Airline","type":"Breguet 14","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1925,"date":"07/24/1925","loc":"Budapest, Hungary","region":"Hungary","op":"CIDNA","cat":"Early Airline","type":"Potez IX","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""},{"y":1925,"date":"09/03/1925","loc":"Caldwell, Ohio","region":"United States","op":"Military - U.S. Navy","cat":"Military","type":"Dirigible ZR-1 Shenandoah (airship)","aboard":43.0,"fat":14.0,"ground":0.0,"summary":"Powerful air currents buffeted her severely during thunderstorms and the hull overstressed and broke apart."},{"y":1925,"date":"09/07/1925","loc":"Toul, France","region":"France","op":"CIDNA","cat":"Early Airline","type":"Unknown","aboard":3.0,"fat":3.0,"ground":0.0,"summary":""},{"y":1925,"date":"11/14/1925","loc":"Off Boulogne-sur-Mer, France","region":"France","op":"Air Union","cat":"Early Airline","type":"Farman F-60 Goliath","aboard":2.0,"fat":2.0,"ground":0.0,"summary":""},{"y":1926,"date":"02/12/1926","loc":"Montpelier, Ohio","region":"United States","op":"US Aerial Mail Service","cat":"Postal / Mail","type":"Curtiss Carrier Pigeon","aboard":1.0,"fat":1.0,"ground":0.0,"summary":""}];
+
+const NAVY = '#1C3350', NAVY_LT = '#5B7A94', BRASS = '#B8863B', BRASS_LT = '#D9A857', BRICK = '#A4453A', BLUE = '#118DFF';
+const TEXT_DIM = '#605E5C';
+const GRID_COLOR = '#EDEBE9';
+
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.color = TEXT_DIM;
+Chart.defaults.borderColor = GRID_COLOR;
+
+let state = { cats:{'Military':true,'Postal / Mail':true,'Early Airline':true,'Private':true}, yMin:1908, yMax:1926, highlightYear:null };
+let charts = {};
+
+function filtered(){
+  return RAW.filter(d => {
+    if(!state.cats[d.cat]) return false;
+    if(d.y < state.yMin || d.y > state.yMax) return false;
+    return true;
+  });
+}
+
+function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
+
+function renderKPIs(data){
+  const el = document.getElementById('kpiRow');
+  const totalFat = sum(data.map(d=>d.fat));
+  const worst = data.reduce((a,b)=> (b.fat > (a?a.fat:-1) ? b : a), null);
+  const typeCounts = {};
+  data.forEach(d=>{ typeCounts[d.type] = (typeCounts[d.type]||0)+1; });
+  const topType = Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0];
+  const icons = {
+    entries: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#1C3350" stroke-width="1.1"/><path d="M4.5 8h7M4.5 5.5h7M4.5 10.5h4" stroke="#1C3350" stroke-width="1.1" stroke-linecap="round"/></svg>',
+    fatal: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l2 4.2 4.6.6-3.3 3.2.8 4.6L8 11.4 3.9 13.6l.8-4.6L1.4 5.8l4.6-.6L8 1z" fill="#B8863B"/></svg>',
+    worst: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 13V6l6-4 6 4v7" stroke="#1C3350" stroke-width="1.1" stroke-linejoin="round"/><path d="M6 13V9h4v4" stroke="#1C3350" stroke-width="1.1"/></svg>',
+    plane: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v13M1.5 6l13 3M1.5 11l13-3" stroke="#B8863B" stroke-width="1.1" stroke-linecap="round"/></svg>',
+  };
+  const items = [
+    {label:'Entries in view', value: data.length, unit:'', icon:icons.entries, gold:false},
+    {label:'Lives lost, total', value: totalFat, unit:'', icon:icons.fatal, gold:true},
+    {label:'Largest single loss', value: worst ? worst.fat : '—', unit: worst ? worst.date : '', icon:icons.worst, gold:false,
+      cf: worst ? (worst.fat>=20?'bad':worst.fat>=5?'warn':'neutral') : null,
+      cfLabel: worst ? (worst.fat>=20?'Severe':worst.fat>=5?'Moderate':'Limited') : null },
+    {label:'Most-recorded aircraft', value: topType ? topType[0] : '—', unit: topType ? topType[1]+' entries' : '', icon:icons.plane, gold:true, small:true},
+  ];
+  el.innerHTML = items.map(it => `
+    <div class="visual card-visual ${it.gold?'accent-gold':''}">
+      <div class="card-icon">${it.icon}</div>
+      <div>
+        <div class="card-label">${it.label}${it.cf ? `<span class="cf-badge ${it.cf==='neutral'?'good':it.cf}">${it.cfLabel}</span>` : ''}</div>
+        <div class="card-value ${it.cf && it.cf!=='neutral' ? 'kpi-'+it.cf : ''}" style="${it.small?'font-size:16px;':''}">${it.value}${it.unit ? `<small>${it.unit}</small>` : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAdvTable(data){
+  const el = document.getElementById('advTable');
+  if(!el) return;
+  const cats = ['Military','Postal / Mail','Early Airline','Private'];
+  const rows = cats.map(c=>{
+    const rows = data.filter(d=>d.cat===c);
+    const totalFat = sum(rows.map(d=>d.fat));
+    return { cat:c, n: rows.length, totalFat, avg: rows.length ? totalFat/rows.length : 0 };
+  }).filter(r=>r.n>0);
+  const avgs = rows.map(r=>r.avg);
+  const aMin = Math.min(...avgs), aMax = Math.max(...avgs);
+  function scaleColor(v){
+    if(avgs.length===0 || aMax===aMin) return '#f3f2f1';
+    const t = (v-aMin)/(aMax-aMin);
+    const r = Math.round(255 - t*(255-164));
+    const g = Math.round(255 - t*(255-69));
+    const b = Math.round(255 - t*(255-58));
+    return `rgb(${r},${g},${b})`;
+  }
+  el.innerHTML = `
+    <table class="pbi-table" style="width:100%;">
+      <thead><tr><th>Operator type</th><th style="text-align:right;">Entries</th><th style="text-align:right;">Total lost</th><th style="text-align:right;">Avg. per entry</th></tr></thead>
+      <tbody>
+        ${rows.map(r=>`
+          <tr>
+            <td>${r.cat}</td>
+            <td style="text-align:right;">${r.n}</td>
+            <td style="text-align:right;">${r.totalFat}</td>
+            <td style="text-align:right; background:${scaleColor(r.avg)}; font-weight:600;">${r.avg.toFixed(1)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderYearChart(data){
+  const counts = {}; for(let y=1908;y<=1926;y++) counts[y]=0;
+  data.forEach(d=>{ counts[d.y] = (counts[d.y]||0)+1; });
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const ctx = document.getElementById('yearChart');
+  if(charts.year) charts.year.destroy();
+  charts.year = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{
+      data: values,
+      backgroundColor: labels.map(l=>{
+        const y = parseInt(l);
+        const dim = state.highlightYear !== null && state.highlightYear !== y;
+        return dim ? 'rgba(28,51,80,0.15)' : NAVY;
+      }),
+      borderRadius:2, maxBarThickness:34
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      onClick:(evt, els)=>{
+        if(els.length){
+          const y = parseInt(labels[els[0].index]);
+          state.highlightYear = state.highlightYear === y ? null : y;
+          renderAll();
+        }
+      },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ title:(items)=>items[0].label, label:(item)=>`${item.raw} entries` } } },
+      scales:{
+        x:{ grid:{display:false}, ticks:{maxRotation:90,minRotation:60,font:{size:9}} },
+        y:{ grid:{color:GRID_COLOR}, title:{display:true, text:'entries', color:TEXT_DIM, font:{size:10}} }
+      }
+    }
+  });
+}
+
+function renderCatChart(data){
+  const cats = ['Military','Postal / Mail','Early Airline','Private','Unknown'];
+  const colors = { 'Military':BRICK, 'Postal / Mail':BRASS, 'Early Airline':NAVY_LT, 'Private':'#8a8272', 'Unknown':'#b7b3ad' };
+  const counts = cats.map(c => ({c, v: data.filter(d=>d.cat===c).length})).filter(x=>x.v>0);
+  const ctx = document.getElementById('catChart');
+  if(charts.cat) charts.cat.destroy();
+  charts.cat = new Chart(ctx, {
+    type:'doughnut',
+    data:{ labels: counts.map(c=>c.c), datasets:[{ data: counts.map(c=>c.v), backgroundColor: counts.map(c=>colors[c.c]), borderColor:'#fff', borderWidth:2 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'58%',
+      plugins:{ legend:{ position:'bottom', labels:{boxWidth:10, font:{size:10.5}, color:TEXT_DIM} } }
+    }
+  });
+}
+
+function renderTypeChart(data){
+  const counts = {};
+  data.forEach(d=>{ counts[d.type] = (counts[d.type]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const ctx = document.getElementById('typeChart');
+  if(charts.type) charts.type.destroy();
+  charts.type = new Chart(ctx, {
+    type:'bar',
+    data:{ labels: sorted.map(s=>s[0]), datasets:[{ data: sorted.map(s=>s[1]), backgroundColor: NAVY_LT, borderRadius:2 }] },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{ grid:{color:GRID_COLOR}, title:{display:true,text:'entries',color:TEXT_DIM,font:{size:10}} }, y:{ grid:{display:false}, ticks:{font:{size:10.5}} } }
+    }
+  });
+}
+
+function renderRegionChart(data){
+  const counts = {};
+  data.forEach(d=>{ counts[d.region] = (counts[d.region]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const ctx = document.getElementById('regionChart');
+  if(charts.region) charts.region.destroy();
+  charts.region = new Chart(ctx, {
+    type:'bar',
+    data:{ labels: sorted.map(s=>s[0]), datasets:[{ data: sorted.map(s=>s[1]), backgroundColor: BRASS, borderRadius:2 }] },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{ grid:{color:GRID_COLOR}, title:{display:true,text:'entries',color:TEXT_DIM,font:{size:10}} }, y:{ grid:{display:false}, ticks:{font:{size:10.5}} } }
+    }
+  });
+}
+
+function renderLog(data){
+  const body = document.getElementById('logBody');
+  const sorted = [...data].sort((a,b)=> new Date(a.date) - new Date(b.date));
+  const maxFat = Math.max(1, ...data.map(d=>d.fat));
+  function fatBg(f){
+    const t = Math.min(1, f/maxFat);
+    const r = Math.round(255 - t*(255-164));
+    const g = Math.round(255 - t*(255-69));
+    const b = Math.round(255 - t*(255-58));
+    return { bg:`rgb(${r},${g},${b})`, text: t>0.55 ? '#fff' : '#A4453A' };
+  }
+  body.innerHTML = sorted.map(d => {
+    const c = fatBg(d.fat);
+    return `
+    <tr>
+      <td style="white-space:nowrap;">${d.date}</td>
+      <td>${d.loc}</td>
+      <td>${d.op}</td>
+      <td>${d.type}</td>
+      <td class="fat-col" style="text-align:right; background:${c.bg}; color:${c.text};">${d.fat} / ${d.aboard||'—'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('logCount').textContent = `${data.length} rows in the current filter — background color scale on fatalities.`;
+}
+
+function updateSliderUI(){
+  document.getElementById('yLabel').textContent = `Between ${state.yMin} and ${state.yMax}`;
+  const min=1908, max=1926;
+  const pctMin = ((state.yMin-min)/(max-min))*100;
+  const pctMax = ((state.yMax-min)/(max-min))*100;
+  const fill = document.getElementById('trackFill');
+  fill.style.left = pctMin + '%';
+  fill.style.width = (pctMax-pctMin) + '%';
+}
+
+function renderAll(){
+  const data = filtered();
+  renderKPIs(data);
+  renderYearChart(data);
+  renderCatChart(data);
+  renderTypeChart(data);
+  renderRegionChart(data);
+  renderLog(data);
+  renderAdvTable(data);
+  document.getElementById('countFooter').textContent = `showing ${data.length} of ${RAW.length} entries`;
+}
+
+document.querySelectorAll('.slicer-option input').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    state.cats[cb.dataset.cat] = cb.checked;
+    if(Object.values(state.cats).every(v=>!v)){
+      Object.keys(state.cats).forEach(k=>state.cats[k]=true);
+      document.querySelectorAll('.slicer-option input').forEach(c=>c.checked=true);
+    }
+    renderAll();
+  });
+});
+
+const yMinInput = document.getElementById('yMin');
+const yMaxInput = document.getElementById('yMax');
+yMinInput.addEventListener('input', ()=>{
+  state.yMin = Math.min(parseInt(yMinInput.value), state.yMax);
+  yMinInput.value = state.yMin;
+  updateSliderUI(); renderAll();
+});
+yMaxInput.addEventListener('input', ()=>{
+  state.yMax = Math.max(parseInt(yMaxInput.value), state.yMin);
+  yMaxInput.value = state.yMax;
+  updateSliderUI(); renderAll();
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  state = { cats:{'Military':true,'Postal / Mail':true,'Early Airline':true,'Private':true}, yMin:1908, yMax:1926, highlightYear:null };
+  yMinInput.value=1908; yMaxInput.value=1926;
+  document.querySelectorAll('.slicer-option input').forEach(c=>c.checked=true);
+  document.querySelectorAll('.bookmark-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.bookmark-btn[data-bookmark="all"]').classList.add('active');
+  updateSliderUI(); renderAll();
+});
+
+/* ---- Bookmarks: preset filter + view states ---- */
+document.querySelectorAll('.bookmark-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.bookmark-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const bm = btn.dataset.bookmark;
+    state.highlightYear = null;
+    if(bm === 'all'){
+      state.cats = {'Military':true,'Postal / Mail':true,'Early Airline':true,'Private':true}; state.yMin=1908; state.yMax=1926;
+    } else if(bm === 'wwi'){
+      state.cats = {'Military':true,'Postal / Mail':true,'Early Airline':true,'Private':true}; state.yMin=1914; state.yMax=1918;
+    } else if(bm === 'postwar'){
+      state.cats = {'Military':true,'Postal / Mail':true,'Early Airline':true,'Private':true}; state.yMin=1919; state.yMax=1926;
+    } else if(bm === 'military'){
+      state.cats = {'Military':true,'Postal / Mail':false,'Early Airline':false,'Private':false}; state.yMin=1908; state.yMax=1926;
+    }
+    yMinInput.value = state.yMin; yMaxInput.value = state.yMax;
+    document.querySelectorAll('.slicer-option input').forEach(cb=>{ cb.checked = state.cats[cb.dataset.cat]; });
+    updateSliderUI(); renderAll();
+  });
+});
+
+/* ---- Bookmark-style show/hide toggle ---- */
+const statsToggle = document.getElementById('statsToggle');
+const advancedPanel = document.getElementById('advancedPanel');
+statsToggle.addEventListener('click', ()=>{
+  const shown = advancedPanel.classList.toggle('shown');
+  statsToggle.textContent = shown ? '− Hide advanced stats' : '+ Show advanced stats';
+  if(shown) renderAdvTable(filtered());
+});
+
+/* ---- Focus mode ---- */
+const chartKeyMap = { yearChart:'year', catChart:'cat', typeChart:'type', regionChart:'region' };
+const focusOverlay = document.getElementById('focusOverlay');
+const focusBody = document.getElementById('focusBody');
+const focusTitle = document.getElementById('focusTitle');
+document.querySelectorAll('.focus-btn').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const key = btn.dataset.focus;
+    if(key === 'advTable'){
+      focusTitle.textContent = 'Fatalities by operator type';
+      focusBody.innerHTML = `<div style="transform:scale(1.15); transform-origin:top left; padding-top:20px;">${document.getElementById('advTable').innerHTML}</div>`;
+    } else {
+      const chart = charts[chartKeyMap[key]];
+      focusTitle.textContent = btn.closest('.visual').querySelector('.visual-title').firstChild.textContent.trim();
+      if(chart){
+        const img = chart.toBase64Image();
+        focusBody.innerHTML = `<img src="${img}" style="width:100%; height:100%; object-fit:contain;">`;
+      }
+    }
+    focusOverlay.classList.add('open');
+  });
+});
+document.getElementById('focusClose').addEventListener('click', ()=> focusOverlay.classList.remove('open'));
+focusOverlay.addEventListener('click', (e)=>{ if(e.target === focusOverlay) focusOverlay.classList.remove('open'); });
+
+updateSliderUI();
+renderAll();
+</script>
+</body>
+</html>
