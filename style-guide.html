@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau Style Guide — Kiera Coyne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='9' fill='%230a1120'/%3E%3Crect x='8' y='18' width='4' height='9' rx='1' fill='%23e3c065'/%3E%3Crect x='15' y='12' width='4' height='15' rx='1' fill='%23e3c065'/%3E%3Crect x='22' y='7' width='4' height='20' rx='1' fill='%23c9a227'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a1120; --bg-2:#0f1a2e; --card:#101c33;
+    --ink:#eef1f6; --ink-dim:#8a97b0; --line:#22314c;
+    --accent:#c9a227; --accent-bright:#e3c065;
+    --good:#0F7B3F; --warn:#B8860B; --bad:#C0392B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 10% -10%, rgba(201,162,39,0.08), transparent 45%),
+      radial-gradient(ellipse at 95% 0%, rgba(45,90,140,0.16), transparent 45%),
+      var(--bg);
+    color:var(--ink); font-family:'Inter', sans-serif; min-height:100vh;
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:0 28px 90px; }
+
+  .topbar{ position:sticky; top:0; z-index:10; background:rgba(15,26,46,0.88); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .topbar-inner{ max-width:880px; margin:0 auto; padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); }
+  .brand-mark{ width:34px; height:34px; border-radius:9px; background:linear-gradient(155deg, var(--accent-bright), var(--accent) 65%, #8a6c1c); display:flex; align-items:center; justify-content:center; }
+  .brand-name{ font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:.02em; color:var(--ink); }
+  .top-nav{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.03em; display:flex; gap:6px; align-items:center; }
+  .top-nav a{ color:var(--ink-dim); text-decoration:none; padding:8px 14px; border-radius:999px; transition:color .15s ease, background .15s ease; }
+  .top-nav a:hover{ color:var(--ink); background:rgba(255,255,255,0.05); }
+  .top-nav a.current{ color:var(--bg); background:var(--accent-bright); }
+
+  header{ padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent-bright); margin:0 0 16px; }
+  h1{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(32px,4.6vw,46px); line-height:1.08; margin:0 0 16px; letter-spacing:-.01em; }
+  .sub{ max-width:600px; color:var(--ink-dim); font-size:16px; line-height:1.7; margin:0; }
+
+  section{ padding:44px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  .sec-num{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--accent-bright); letter-spacing:.1em; margin-bottom:8px; }
+  h2{ font-family:'Fraunces', serif; font-weight:600; font-size:24px; margin:0 0 10px; color:var(--ink); }
+  .sec-intro{ color:var(--ink-dim); font-size:14.5px; line-height:1.7; margin:0 0 24px; max-width:640px; }
+  p{ color:var(--ink-dim); font-size:14.5px; line-height:1.75; }
+
+  h3{ font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink); margin:24px 0 10px; }
+
+  /* do/dont pairs */
+  .dodont{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .dd-card{ padding:16px 18px; border-radius:8px; border:1px solid var(--line); background:var(--card); }
+  .dd-card.do{ border-left:3px solid var(--good); }
+  .dd-card.dont{ border-left:3px solid var(--bad); }
+  .dd-label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; display:block; }
+  .dd-card.do .dd-label{ color:var(--good); }
+  .dd-card.dont .dd-label{ color:var(--bad); }
+  .dd-card p{ margin:0; font-size:13.5px; color:var(--ink-dim); }
+
+  /* mockup banner demo */
+  .mock{ border-radius:8px; overflow:hidden; border:1px solid var(--line); margin:18px 0; }
+  .mock-banner{ padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .mock-banner-title{ font-size:14px; font-weight:600; color:#fff; }
+  .mock-banner-sub{ font-size:10.5px; color:rgba(255,255,255,0.7); margin-top:2px; }
+  .mock-banner-stats{ display:flex; gap:16px; }
+  .mock-stat{ text-align:right; }
+  .mock-stat-num{ font-size:13px; font-weight:700; color:#f0c869; }
+  .mock-stat-lbl{ font-size:8px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:.06em; }
+  .mock-filters{ background:#161d27; padding:10px 20px; display:flex; gap:10px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#93a0ac; }
+  .mock-pill{ border:1px solid #33404f; border-radius:999px; padding:4px 10px; }
+  .mock-body{ background:#1c232f; padding:20px; display:flex; gap:12px; }
+  .mock-chart{ flex:1; height:70px; border-radius:4px; background:#252d3a; }
+
+  /* layout mockups: filter placement */
+  .layout-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .layout-card{ border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .layout-label{ padding:10px 14px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink); background:var(--card); border-bottom:1px solid var(--line); }
+  .layout-body{ display:flex; height:110px; background:#161d27; }
+  .layout-body.top{ flex-direction:column; }
+  .lf-bar{ background:#232c3c; }
+  .layout-body.top .lf-bar{ height:22px; }
+  .layout-body.side .lf-bar{ width:34px; }
+  .lf-charts{ flex:1; display:flex; gap:6px; padding:8px; }
+  .lf-charts div{ flex:1; background:#2a3548; border-radius:3px; }
+  .layout-note{ padding:10px 14px; font-size:12px; color:var(--ink-dim); background:var(--card); }
+
+  /* color palette swatches */
+  .swatch-row{ display:flex; gap:6px; margin:10px 0 6px; flex-wrap:wrap; }
+  .swatch{ width:38px; height:38px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); }
+  .swatch-caption{ font-size:12px; color:var(--ink-dim); margin:0 0 18px; }
+
+  /* chart picker table */
+  table.picker{ width:100%; border-collapse:collapse; margin-top:12px; }
+  table.picker th{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--accent-bright); padding:8px 10px; border-bottom:1px solid var(--line); }
+  table.picker td{ padding:10px 10px; font-size:13px; color:var(--ink-dim); border-bottom:1px solid var(--line); vertical-align:top; }
+  table.picker td b{ color:var(--ink); }
+
+  .tip{ display:flex; gap:10px; padding:14px 16px; border-radius:8px; background:var(--card); border:1px solid var(--line); margin:14px 0; }
+  .tip-icon{ flex-shrink:0; color:var(--accent-bright); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; }
+  .tip p{ margin:0; }
+
+  footer{ margin-top:56px; padding-top:24px; border-top:1px solid var(--line); font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-dim); }
+  footer a{ color:var(--accent-bright); text-decoration:none; }
+
+  @media (max-width:640px){
+    .dodont, .layout-row{ grid-template-columns:1fr; }
+    .mock-banner-stats{ display:none; }
+    .brand-name{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">
+          <svg width="18" height="18" viewBox="0 0 34 34" fill="none"><rect x="6" y="18" width="4" height="10" rx="1" fill="#0a1120"/><rect x="15" y="10" width="4" height="18" rx="1" fill="#0a1120"/><rect x="24" y="4" width="4" height="24" rx="1" fill="#0a1120"/></svg>
+        </span>
+        <span class="brand-name">Kiera Coyne</span>
+      </a>
+      <nav class="top-nav">
+        <a href="./index.html">Home</a>
+        <a href="./index.html#portfolio">Portfolio</a>
+        <a href="./style-guide.html" class="current">Style Guide</a>
+        <a href="./about.html">About Me</a>
+      </nav>
+    </div>
+  </div>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Reference</p>
+    <h1>A Tableau Style Guide</h1>
+    <p class="sub">Working conventions for banners, filter placement, and color — the same rules I used to build the dashboards in this portfolio, written down so they're consistent next time.</p>
+  </header>
+
+  <section>
+    <p class="sec-num">01</p>
+    <h2>Banners &amp; title bars</h2>
+    <p class="sec-intro">The banner's only job is to orient someone in under two seconds: what is this, and what period or scope am I looking at. Everything past that is competing for attention it doesn't need.</p>
+
+    <div class="mock">
+      <div class="mock-banner" style="background:linear-gradient(120deg,#3d0f1f,#7B1E3D 55%,#8a2a4a); border-bottom:3px solid #C9A227;">
+        <div>
+          <div class="mock-banner-title">Wine Quality Analysis</div>
+          <div class="mock-banner-sub">1,377 samples · UCI Machine Learning Repository</div>
+        </div>
+        <div class="mock-banner-stats">
+          <div class="mock-stat"><div class="mock-stat-num">1,377</div><div class="mock-stat-lbl">Samples</div></div>
+          <div class="mock-stat"><div class="mock-stat-num">11</div><div class="mock-stat-lbl">Measures</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="swatch-caption">Title, one line of context, and at most two live stats. No filters live here.</p>
+
+    <div class="dodont">
+      <div class="dd-card do">
+        <span class="dd-label">Do</span>
+        <p>Keep it to a title, one line of context (data source, date range, scope), and — if there's room — one or two live stat chips.</p>
+      </div>
+      <div class="dd-card dont">
+        <span class="dd-label">Don't</span>
+        <p>Don't put filters, legends, or a chart inside the banner. If it needs a scroll to find, it's not a banner anymore.</p>
+      </div>
+    </div>
+    <div class="dodont">
+      <div class="dd-card do">
+        <span class="dd-label">Do</span>
+        <p>Cap it around 8–10% of a 1080p viewport (roughly 80–110px). Build it as a floating container pinned to the top with a colored rectangle behind it.</p>
+      </div>
+      <div class="dd-card dont">
+        <span class="dd-label">Don't</span>
+        <p>Don't let the banner grow taller than the tallest chart below it — it should announce the page, not dominate it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-num">02</p>
+    <h2>Where filters go</h2>
+    <p class="sec-intro">Filter placement is a decision, not a default. Pick based on how many filters there are and whether they apply to the whole page or just one view.</p>
+
+    <div class="layout-row">
+      <div class="layout-card">
+        <div class="layout-label">Top bar — 1 to 3 global filters</div>
+        <div class="layout-body top">
+          <div class="lf-bar"></div>
+          <div class="lf-charts"><div></div><div></div></div>
+        </div>
+        <div class="layout-note">Best when people scan left-to-right first and the filters apply to everything below. This is what both dashboards in this portfolio use.</div>
+      </div>
+      <div class="layout-card">
+        <div class="layout-label">Left rail — 4+ filters, many tabs</div>
+        <div class="layout-body side">
+          <div class="lf-bar"></div>
+          <div class="lf-charts"><div></div><div></div></div>
+        </div>
+        <div class="layout-note">Best when filters need to stay visible while scrolling a long page, or across multiple dashboard tabs in one workbook.</div>
+      </div>
+    </div>
+
+    <h3>In-visual (quick) filters</h3>
+    <p>Only for a filter that's local to one specific chart — not the whole page. If more than one visual needs it, promote it to the top bar or rail instead; a filter that only half-applies is the single most common source of "wait, why didn't that update?" confusion.</p>
+
+    <h3>Click-to-filter actions</h3>
+    <p>Prefer a dashboard action (click a bar to filter or highlight the rest of the page) over adding another filter widget, when the category is already visible in a chart. It's one less control competing for space, and it teaches itself — people click marks instinctively.</p>
+
+    <div class="tip">
+      <span class="tip-icon">RULE</span>
+      <p>Filters live in the same place on every dashboard in a workbook. Moving them page to page forces a re-scan every single time.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-num">03</p>
+    <h2>Color</h2>
+    <p class="sec-intro">Color is the fastest channel a viewer reads — which means it's also the fastest way to mislead them if it's inconsistent.</p>
+
+    <h3>Categorical (distinct groups)</h3>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#7B1E3D;"></div>
+      <div class="swatch" style="background:#C9A227;"></div>
+      <div class="swatch" style="background:#5B7A94;"></div>
+      <div class="swatch" style="background:#8a8272;"></div>
+      <div class="swatch" style="background:#4a5568;"></div>
+    </div>
+    <p class="swatch-caption">Cap it at 6–8 hues before a legend stops being readable. One signature color for "the" category that matters, neutral gray for everything else.</p>
+
+    <h3>Sequential (low → high, one measure)</h3>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#fdf6e3;"></div>
+      <div class="swatch" style="background:#f0dba0;"></div>
+      <div class="swatch" style="background:#e0be63;"></div>
+      <div class="swatch" style="background:#c9a227;"></div>
+      <div class="swatch" style="background:#8a6c1c;"></div>
+    </div>
+    <p class="swatch-caption">A single hue, light to dark. This is what conditional-formatting data bars and heat tables should use — never a rainbow.</p>
+
+    <h3>Diverging (below / above a midpoint)</h3>
+    <div class="swatch-row">
+      <div class="swatch" style="background:#7B1E3D;"></div>
+      <div class="swatch" style="background:#b0507a;"></div>
+      <div class="swatch" style="background:#e8e2d4;"></div>
+      <div class="swatch" style="background:#8fb4a0;"></div>
+      <div class="swatch" style="background:#3d7a5a;"></div>
+    </div>
+    <p class="swatch-caption">Two hues moving away from a neutral center — for things like correlation, variance to target, or year-over-year change.</p>
+
+    <div class="dodont">
+      <div class="dd-card do">
+        <span class="dd-label">Do</span>
+        <p>Keep one color meaning one thing across every chart on the page. If red means "Red wine" in the scatter plot, it means the same thing in every other chart on that page.</p>
+      </div>
+      <div class="dd-card dont">
+        <span class="dd-label">Don't</span>
+        <p>Don't fully hide marks when cross-filtering — dim them to ~10–20% opacity instead, so the viewer keeps the context of what's being excluded.</p>
+      </div>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">CHECK</span>
+      <p>Run the palette through a color-blindness simulator before shipping. Red/green as the only signal fails for a meaningful share of viewers — pair color with position, label, or icon wherever the distinction actually matters.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-num">04</p>
+    <h2>KPI cards</h2>
+    <p class="sec-intro">One number, one label. The temptation is always to fit three metrics into one card — resist it.</p>
+    <table class="picker">
+      <tr><th>Element</th><th>Guidance</th></tr>
+      <tr><td><b>Primary number</b></td><td>Largest text on the card. Tabular/monospaced figures so multiple cards align.</td></tr>
+      <tr><td><b>Label</b></td><td>Small, uppercase, muted — sits above or below the number, never competes with it in size.</td></tr>
+      <tr><td><b>Comparison</b></td><td>Optional second line only — vs. last period or vs. target. If it doesn't change the takeaway, leave it off.</td></tr>
+      <tr><td><b>Conditional color</b></td><td>Color the number itself against a threshold, not the whole card background — a card that's fully red reads as an error state, not a data point.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <p class="sec-num">05</p>
+    <h2>Chart picker</h2>
+    <p class="sec-intro">A quick reference for matching the question to the chart, before defaulting to a bar chart for everything.</p>
+    <table class="picker">
+      <tr><th>Question</th><th>Chart</th><th>Notes</th></tr>
+      <tr><td>Compare categories</td><td><b>Bar chart</b></td><td>Horizontal when labels are long; sort by value, not alphabetically.</td></tr>
+      <tr><td>Trend over time</td><td><b>Line chart</b></td><td>One line per category, max 4–5 before it's noise. Consider small multiples past that.</td></tr>
+      <tr><td>Relationship between two measures</td><td><b>Scatter plot</b></td><td>Add a third measure as point size, and color for a category, before adding a fourth axis.</td></tr>
+      <tr><td>Part-to-whole</td><td><b>Stacked bar</b> or <b>donut</b></td><td>Donut only past 2–3 slices makes it hard to compare; a stacked bar reads more precisely.</td></tr>
+      <tr><td>Distribution / spread</td><td><b>Histogram</b> or <b>box plot</b></td><td>Histogram for one group, box plot to compare spread across several groups at once.</td></tr>
+      <tr><td>Ranking</td><td><b>Sorted bar</b></td><td>Always sorted — an unsorted ranking chart isn't actually showing rank.</td></tr>
+      <tr><td>Row-level detail</td><td><b>Table</b></td><td>Add data bars or a color scale on the one column that matters most — not every column.</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    <a href="./index.html#portfolio">← Back to the dashboards this guide describes</a> · <a href="https://github.com/kieracoyne5/Dashboards" target="_blank" rel="noopener">source on GitHub</a>
+  </footer>
+</div>
+</body>
+</html>
