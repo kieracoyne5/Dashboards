@@ -70,7 +70,16 @@
   .top-nav a.current{ color:var(--bg); background:var(--accent-bright); }
 
   /* ---- Header ---- */
-  header{ padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  header{ padding:56px 0 40px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:32px; flex-wrap:wrap; }
+  .header-photo{
+    width:132px; height:132px; border-radius:16px; flex-shrink:0;
+    background:linear-gradient(155deg, var(--accent-bright), var(--accent) 65%, #8a6c1c);
+    padding:3px;
+  }
+  .header-photo img{
+    width:100%; height:100%; border-radius:14px; object-fit:cover; display:block;
+  }
+  .header-text{ flex:1; min-width:260px; }
   .header-email{
     display:inline-block; margin-top:16px;
   }
@@ -182,7 +191,8 @@
       </a>
       <nav class="top-nav">
         <a href="./index.html">Home</a>
-        <a href="./index.html" onclick="document.querySelector('[data-section=portfolio]')?.click(); return false;">Portfolio</a>
+        <a href="./index.html#portfolio">Portfolio</a>
+        <a href="./style-guide.html">Style Guide</a>
         <a href="./about.html" class="current">About Me</a>
       </nav>
     </div>
@@ -190,12 +200,16 @@
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">About</p>
-    <h1>Kiera Coyne</h1>
-    <p class="sub">AI &amp; Business Intelligence Manager — turning messy data into dashboards executives actually use.</p>
-    <p class="sub">7+ years leading analytics across digital products, finance, and enterprise operations, most recently building out BI &amp; AI strategy for Apple's U.S. Sales and Finance organizations at HCL / Starschema.</p>
-    <div class="header-email">
-      <a href="mailto:kieracoyne4@gmail.com">kieracoyne4@gmail.com</a>
+    <div class="header-photo">
+      <img src="./me.jpeg" alt="Kiera Coyne">
+    </div>
+    <div class="header-text">
+      <p class="eyebrow">About</p>
+      <h1>Kiera Coyne</h1>
+      <p class="sub">Analytics Leader — 7+ years turning data into dashboards executives actually use, most recently leading BI &amp; AI strategy for Apple's U.S. Sales and Finance org at HCL / Starschema.</p>
+      <div class="header-email">
+        <a href="mailto:kieracoyne4@gmail.com">kieracoyne4@gmail.com</a>
+      </div>
     </div>
   </header>
 
@@ -245,12 +259,9 @@
         </div>
         <div class="role-meta">HCL, Starschema · Client: Apple — US Sales Channel</div>
         <ul class="role-bullets">
-          <li>Lead and mentor a team of Business Intelligence analysts delivering analytics products and executive dashboards that support strategic decision-making across Apple's U.S. Sales and Finance organizations.</li>
-          <li>Delivered <b>10+ core dashboards</b> with a roadmap to 50+, supporting more than <b>1,000 business users</b>.</li>
-          <li>Spearhead integration of AI capabilities into Tableau, developing intelligent dashboards with predictive insights and automated analytics.</li>
-          <li>Define enterprise AI and Business Intelligence strategy by aligning analytics initiatives with business priorities, establishing KPI frameworks, and delivering executive insights that guide strategic investment decisions.</li>
-          <li>Partner with Data Engineering and business leaders to establish source-of-truth data models, standardized KPI definitions, semantic-layer strategy, and reusable analytics assets across finance and sales organizations.</li>
-          <li>Partner with Product, Technology, Engineering, and business leaders to define success metrics, prioritize analytics initiatives, and deliver executive-ready recommendations.</li>
+          <li>Lead a team of BI analysts delivering executive dashboards across Apple's U.S. Sales and Finance organizations.</li>
+          <li>Delivered <b>10+ core dashboards</b> on a roadmap to 50+, supporting <b>1,000+ business users</b>.</li>
+          <li>Spearheading AI integration into Tableau — predictive insights, automated analytics, and enterprise BI strategy.</li>
         </ul>
       </div>
 
@@ -261,12 +272,9 @@
         </div>
         <div class="role-meta">Vail Resorts</div>
         <ul class="role-bullets">
-          <li>Owned enterprise BI strategy for FP&amp;A, leading a company-wide analytics transformation that standardized workflows for <b>200+ stakeholders</b>.</li>
-          <li>Architected an enterprise Snowflake analytics platform — governed data models, standardized KPI frameworks, reusable reporting assets, and scalable BI architecture supporting enterprise-wide reporting.</li>
-          <li>Designed executive Tableau dashboards and self-service analytics solutions that informed strategic planning and accelerated decision-making across a <b>$3B revenue portfolio</b>.</li>
-          <li>Automated financial reporting pipelines with SQL and Python, <b>cutting manual prep by 40%</b> and <b>boosting reporting accuracy by 25%</b>.</li>
-          <li>Upskilled analysts in BI design, forecasting, and scenario planning, raising team capability and adoption of advanced analytics.</li>
-          <li>Partnered with executive stakeholders to define KPI frameworks, evaluate strategic initiatives, and translate analytics into actionable recommendations.</li>
+          <li>Owned enterprise BI strategy for FP&amp;A, standardizing workflows for <b>200+ stakeholders</b>.</li>
+          <li>Architected a Snowflake analytics platform and executive Tableau dashboards across a <b>$3B revenue portfolio</b>.</li>
+          <li>Automated financial reporting with SQL/Python — <b>cut manual prep 40%</b>, <b>boosted accuracy 25%</b>.</li>
         </ul>
       </div>
 
@@ -277,12 +285,9 @@
         </div>
         <div class="role-meta">HCL, Starschema · Client: Apple — US Sales Channel</div>
         <ul class="role-bullets">
-          <li>Directed a <b>9-person BI team</b> supporting Apple's U.S. finance and sales operations, delivering 100+ analyses per year.</li>
-          <li>Built reusable Tableau analytics products on standardized semantic models and governed metrics, used by over <b>500 Apple stakeholders</b>.</li>
-          <li>Designed Apple's <b>Tableau design system</b>, showcased at Tableau Conference 2023 and scaled across multiple business units.</li>
-          <li>Automated recurring reporting processes with SQL, Python, and Dataiku, <b>reducing prep time by 75%</b> and saving ~400 analyst hours annually.</li>
-          <li>Created prototype BI models and Tableau extensions enabling advanced trend, scenario, and sales channel analysis.</li>
-          <li>Collaborated with senior leaders to define analytics requirements and deliver scalable BI solutions aligned with strategic goals.</li>
+          <li>Directed a <b>9-person BI team</b> supporting Apple's U.S. finance and sales operations.</li>
+          <li>Designed Apple's <b>Tableau design system</b>, showcased at Tableau Conference 2023.</li>
+          <li>Automated reporting with SQL, Python, and Dataiku — <b>cut prep time 75%</b>, ~400 analyst hours/year saved.</li>
         </ul>
       </div>
 
@@ -291,13 +296,11 @@
           <span class="role-title">Advisory Senior Associate / Advisory Associate</span>
           <span class="role-dates">Aug 2019 – Sep 2022</span>
         </div>
-        <div class="role-meta">Grant Thornton LLC · Digital Transformation and Management · Client agencies: Department of State, NASA, DHS, Veterans Affairs</div>
+        <div class="role-meta">Grant Thornton LLC · Client agencies: Dept. of State, NASA, DHS, Veterans Affairs</div>
         <ul class="role-bullets">
-          <li>Designed Power BI dashboards and predictive models to monitor <b>$20B+ in federal funding</b> across 70+ programs, strengthening financial accountability.</li>
-          <li>Automated workforce analytics pipelines with Python and Power BI, <b>cutting delivery times by 50%</b>.</li>
-          <li>Built performance tracking systems and KPI dashboards adopted by 5+ federal divisions.</li>
-          <li>Delivered insights and BI tools to agency executives and White House–level leadership, influencing policy-level funding decisions.</li>
-          <li>Supported federal digital transformation initiatives, ensuring BI solutions aligned with compliance, transparency, and governance standards.</li>
+          <li>Designed Power BI dashboards monitoring <b>$20B+ in federal funding</b> across 70+ programs.</li>
+          <li>Automated workforce analytics pipelines with Python and Power BI, <b>cutting delivery times 50%</b>.</li>
+          <li>Delivered BI tools to agency executives and White House–level leadership on policy-level funding decisions.</li>
         </ul>
       </div>
 
@@ -319,27 +322,27 @@
       <div class="fact">
         <div class="fact-emoji">📍</div>
         <div class="fact-title">Based in Denver</div>
-        <div class="fact-desc">Rocky Mountain views and mile-high productivity.</div>
+        <div class="fact-desc">Rocky Mountain views, mile-high productivity.</div>
       </div>
       <div class="fact">
         <div class="fact-emoji">🐕</div>
         <div class="fact-title">Dog Parent</div>
-        <div class="fact-desc">My best friend and hiking companion.</div>
+        <div class="fact-desc">My hiking companion.</div>
       </div>
       <div class="fact">
         <div class="fact-emoji">📚</div>
         <div class="fact-title">Avid Reader</div>
-        <div class="fact-desc">Always have a book in progress.</div>
+        <div class="fact-desc">Always mid-book.</div>
       </div>
       <div class="fact">
         <div class="fact-emoji">🥾</div>
         <div class="fact-title">Hiking Enthusiast</div>
-        <div class="fact-desc">Exploring trails and mountain peaks.</div>
+        <div class="fact-desc">Trails and peaks.</div>
       </div>
       <div class="fact">
         <div class="fact-emoji">🧗</div>
         <div class="fact-title">Rock Climbing</div>
-        <div class="fact-desc">Indoor gym and outdoor climbing adventures.</div>
+        <div class="fact-desc">Gym and outdoor routes.</div>
       </div>
     </div>
   </section>
@@ -350,4 +353,3 @@
 </div>
 </body>
 </html>
-
