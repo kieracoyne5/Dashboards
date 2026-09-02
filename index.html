@@ -31,7 +31,7 @@
   }
   .wrap{ max-width:960px; margin:0 auto; padding:0 28px 80px; }
 
-  /* ---- Top nav bar ---- */
+  /* Top nav bar */
   .topbar{
     position:sticky; top:0; z-index:10;
     background:rgba(15,26,46,0.88);
@@ -71,7 +71,7 @@
   .top-nav button.active{ color:var(--bg); background:var(--accent-bright); }
   .top-nav a{ text-decoration:none; color:var(--ink-dim); }
 
-  /* ---- Header ---- */
+  /* Header */
   header{ padding:60px 0 40px; border-bottom:1px solid var(--line); }
   .eyebrow{
     font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.2em;
@@ -83,11 +83,11 @@
   }
   .sub{ max-width:560px; color:var(--ink-dim); font-size:16px; line-height:1.65; margin:0; }
 
-  /* ---- Sections ---- */
+  /* Sections */
   .section{ display:none; }
   .section.active{ display:block; }
 
-  /* ---- Home Section ---- */
+  /* Home section */
   .experience-summary{
     margin-top:48px; padding:40px; border:1px solid var(--line);
     border-radius:8px; background:var(--card);
@@ -120,7 +120,7 @@
     color:var(--ink-dim); text-transform:uppercase;
   }
 
-  /* ---- Gallery ---- */
+  /* Gallery */
   .gallery{ display:grid; gap:24px; margin-top:48px; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); }
   .card{
     display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch;
@@ -205,15 +205,15 @@
     <header>
       <p class="eyebrow">Hello, I'm Kiera</p>
       <h1>Analytics Leader</h1>
-      <p class="sub">Business Intelligence Manager with 7+ years of experience transforming data into actionable insights. </p>
-      <p class="sub"> I have a passion for designing really cool dashabords with a set of data! </p>
-       <p class="sub">Check out some of the dashabords I created and a style guide! Specialized in Tableau, Power BI, SQL, Snowflake, and Python.</p>
+      <p class="sub">Business Intelligence Manager with 7+ years of experience transforming data into actionable insights.</p>
+      <p class="sub">I have a passion for designing really cool dashboards with a set of data!</p>
+      <p class="sub">Check out some of the dashboards I created and a style guide! Specialized in Tableau, Power BI, SQL, Snowflake, and Python.</p>
     </header>
 
     <div class="experience-summary">
       <h2>Experience</h2>
       <p class="experience-text">I've led BI initiatives across multiple organizations, creating data-driven solutions that inform business strategy. Most recently, I managed Business Intelligence for Apple's U.S. Sales & Finance organization, where I built dashboards and analytics platforms used by hundreds of stakeholders daily.</p>
-      <p class="experience-text">My expertise spans data engineering, visualization design, and cross-functional collaboration—helping teams at all levels understand their data and make better decisions.</p>
+      <p class="experience-text">My expertise spans data engineering, visualization design, and cross-functional collaboration, helping teams at all levels understand their data and make better decisions.</p>
 
       <div class="companies-section">
         <h3>Companies & Organizations</h3>
@@ -240,11 +240,11 @@
     <header>
       <p class="eyebrow">Kiera Coyne · Dashboard Portfolio</p>
       <h1>Data, visualized<br>a few ways at a time.</h1>
-      <p class="sub">The same two datasets, built twice — once to Tableau's native capabilities, once to Power BI's — so you can compare how each tool actually shapes the result.</p>
+      <p class="sub">I built the same two datasets twice: once styled to Tableau's native capabilities, once to Power BI's, so you can compare how each tool shapes the result.</p>
     </header>
 
     <p class="gallery-group-label">Tableau-style</p>
-    <p class="gallery-group-note">Cross-filtering, dual-range slicers, and click-to-isolate — built to what Tableau does natively.</p>
+    <p class="gallery-group-note">Cross-filtering, dual-range slicers, and click-to-isolate, all built with what Tableau does out of the box.</p>
     <div class="gallery">
       <a class="card" href="./wine-quality-dashboard.html">
         <span class="tool-badge tableau">Tableau</span>
@@ -271,8 +271,8 @@
       </a>
     </div>
 
-    <p class="gallery-group-label">Power BI–style</p>
-    <p class="gallery-group-note">Filter pane, bookmarks, conditional formatting, and focus mode — built to what Power BI does natively.</p>
+    <p class="gallery-group-label">Power BI-style</p>
+    <p class="gallery-group-note">Filter pane, bookmarks, conditional formatting, and focus mode, all built with what Power BI does out of the box.</p>
     <div class="gallery">
       <a class="card" href="./wine-quality-powerbi.html">
         <span class="tool-badge powerbi">Power BI</span>
@@ -282,7 +282,7 @@
         <div class="card-content">
           <span class="card-tag">Wine Quality</span>
           <h2 class="card-title">Wine Quality Analysis</h2>
-          <p class="card-desc">The same dataset rebuilt to Power BI's native capabilities — filter pane, bookmarks, conditional formatting, and focus mode.</p>
+          <p class="card-desc">Same dataset, rebuilt with Power BI's native tools: filter pane, bookmarks, conditional formatting, and focus mode.</p>
         </div>
       </a>
 
@@ -294,7 +294,7 @@
         <div class="card-content">
           <span class="card-tag">Aviation History</span>
           <h2 class="card-title">Aviation History Analysis</h2>
-          <p class="card-desc">The pioneer-era archive rebuilt to Power BI's native capabilities — slicers, bookmarks, conditional formatting, and focus mode.</p>
+          <p class="card-desc">Same pioneer-era archive, rebuilt with Power BI's native tools: slicers, bookmarks, conditional formatting, and focus mode.</p>
         </div>
       </a>
     </div>
@@ -322,7 +322,7 @@
     });
   });
 
-  // Deep-link support: ./index.html#portfolio jumps straight to the Portfolio tab,
+  // Deep-link support: index.html#portfolio jumps straight to the Portfolio tab,
   // so the About page (and anywhere else) can link here reliably.
   if(location.hash === '#portfolio'){
     showSection('portfolio');
